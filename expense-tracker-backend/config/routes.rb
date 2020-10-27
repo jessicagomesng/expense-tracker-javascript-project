@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :budgets do 
     resources :transactions 
   end
+  post '/login', to: 'sessions#create'
+  # resources :sessions, only: [:create, :destroy]
 
   # get login/logout to sessions controller 
 end

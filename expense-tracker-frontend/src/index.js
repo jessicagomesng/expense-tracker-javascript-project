@@ -1,7 +1,58 @@
 const BASE_URL = "http://localhost:3000"
 const BUDGETS_URL = `${BASE_URL}/budgets`
 
-// document.addEventListener('DOMContentLoaded', function(event) {
+document.addEventListener('DOMContentLoaded', function(event) {
+    let logIn = document.getElementsByClassName('signup-form')[0]
+    let input = document.getElementsByTagName('input')
+    // let formData = new FormData();
+    // formData.append(input[0].name, input[0].value);
+    // formData.append(input[1].name, input[1].value);
+    // let formObject = {};
+    // formData.forEach((value, key) => formObject[key] = value);
+
+    logIn.addEventListener('submit', function(event) {
+        event.preventDefault();
+        let configObj = {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }, 
+            body: JSON.stringify({ name: input[0].value, email: input[1].value })
+        }
+
+        fetch("http://localhost:3000/login", configObj) 
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(object) {
+            console.log(object);
+        })
+
+        
+    })
+})
+
+
+        //             addPoke.addEventListener('click', function(e) {
+//                 let configObj = {
+//                     method: "POST",
+//                     headers: {
+//                         "Content-Type": "application/json",
+//                         "Accept": "application/json"
+//                     },
+//                     body: JSON.stringify({trainer_id: `${trainer.id}`})
+//                 }
+//                 fetch("http://localhost:3000/pokemons", configObj)
+//                 .then(function(response) {
+//                     return response.json();
+//                 })
+//                 .then(function(object) {
+//                     createPokemon(object);
+//                 })
+//             })
+//     }
+// })
 //     // first, I need to fetch all of the trainers from localhost:3000/trainers
 //     fetch("http://localhost:3000/trainers")
 //     .then(function(response) {
