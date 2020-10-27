@@ -1,5 +1,5 @@
 class BudgetsController < ApplicationController 
     def index 
-        budgets = Budget.all 
+        # budgets = Budget.all 
     end 
 end 
