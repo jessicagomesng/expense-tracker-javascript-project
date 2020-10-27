@@ -4,6 +4,7 @@ const BUDGETS_URL = `${BASE_URL}/budgets`
 document.addEventListener('DOMContentLoaded', function(event) {
     let logIn = document.getElementsByClassName('signup-form')[0]
     let input = document.getElementsByTagName('input')
+    let loggedIn = null;
     // let formData = new FormData();
     // formData.append(input[0].name, input[0].value);
     // formData.append(input[1].name, input[1].value);
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }, 
-            body: JSON.stringify({ name: input[0].value, email: input[1].value })
+            body: JSON.stringify({ username: input[0].value, email: input[1].value })
         }
 
         fetch("http://localhost:3000/login", configObj) 
@@ -26,11 +27,17 @@ document.addEventListener('DOMContentLoaded', function(event) {
             return response.json();
         })
         .then(function(object) {
+            loggedIn = object;
+            localStorage.loggedIn = object.id;
             console.log(object);
+            console.log(localStorage.loggedIn)
         })
 
         
     })
+
+    function renderLoggedInPage() {
+    }
 })
 
 
