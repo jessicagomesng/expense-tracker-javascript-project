@@ -3,7 +3,7 @@ class CreateTransactions < ActiveRecord::Migration[6.0]
     create_table :transactions do |t|
       t.integer :budget_id
       t.date :date
-      t.decimal :price
+      t.float :price
       t.string :description
     end
   end

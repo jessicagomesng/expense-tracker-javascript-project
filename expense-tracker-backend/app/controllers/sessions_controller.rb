@@ -4,7 +4,6 @@ class SessionsController < ApplicationController
 
         if user && user.username == params[:username]
             render :json => user
-        else 
         end 
     end 
 
