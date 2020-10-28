@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }, 
-            body: JSON.stringify({ username: input[0].value, email: input[1].value })
+            body: JSON.stringify({ email: input[0].value })
         }
 
         fetch("http://localhost:3000/login", configObj) 
@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
 
     function createBudgets(budgets) {
+        // sort these by chronological date 
         let main = document.getElementsByTagName('main')[0];
         let addBudget = document.createElement('button')
         addBudget.setAttribute('class', 'create-budget')
@@ -119,11 +120,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     return response.json();
                 })
                 .then(function(object) {
-                    // loggedIn = object;
-                    // localStorage.loggedIn = object.id;
-                    // logIn.style.display = 'none';
-                    // renderLoggedInPage();
-                    // console.log(object);
+                    // move this later
+                    form.reset();
+                    console.log(object);
+                    renderBudget(object);
                 })
 
             })
@@ -136,6 +136,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
         })
 
         for (const budget of budgets) {
+            renderBudget(budget);
+        }
+
+        function renderBudget(budget) {
             let div = document.createElement('div');
             div.setAttribute('data-id', budget.id);
             main.appendChild(div);
@@ -149,13 +153,28 @@ document.addEventListener('DOMContentLoaded', function(event) {
             spendingGoal.innerText = `Spending Goal: ${budget.spending_goal}`;
             let savingsGoal = document.createElement('h5'); 
             savingsGoal.innerText = `Savings Goal: ${budget.savings_goal}`;
+            let displayTransactions = document.createElement('button');
+            displayTransactions.innerText = 'show';
+            displayTransactions.setAttribute('class', 'display-transactions')
+            displayTransactions.addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(object) {
+                    console.log(object);
+                })
+                // grab all transactions and display in a table format. 
+                // also new form at top to create new transaction
+            })
             div.appendChild(budgetTitle);
+            div.appendChild(displayTransactions);
             div.appendChild(budgetDates);
             div.appendChild(expectedIncome);
             div.appendChild(spendingGoal);
             div.appendChild(savingsGoal);
         }
-
     }
 
     function displayDate(string) {

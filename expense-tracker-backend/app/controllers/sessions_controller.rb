@@ -1,10 +1,11 @@
 class SessionsController < ApplicationController 
     def create
-        user = User.find_by(:email => params[:email])
+        user = User.find_or_create_by(:email => params[:email])
 
-        if user && user.username == params[:username]
-            render :json => user
-        end 
+        render :json => user 
+        # if user 
+        #     render :json => user
+        # end 
     end 
 
     def destroy 
