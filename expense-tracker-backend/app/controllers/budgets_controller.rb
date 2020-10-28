@@ -14,7 +14,13 @@ class BudgetsController < ApplicationController
         budget.save
 
         render :json => budget
-        # need update, delete
+        # need update
+    end 
+
+    def destroy 
+        # should i write this so it's user.budgets 
+        budget = Budget.find_by_id(params[:id]).destroy 
+        render :json => budget
     end 
 
     private

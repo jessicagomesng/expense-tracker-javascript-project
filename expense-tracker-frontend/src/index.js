@@ -141,7 +141,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         function renderBudget(budget) {
             let div = document.createElement('div');
-            div.setAttribute('data-id', budget.id);
+            // used this ID twice, check it over 
+            div.setAttribute('budget-data-id', budget.id);
             main.appendChild(div);
             let budgetTitle = document.createElement('h3');
             budgetTitle.innerText = budget.name;
@@ -153,10 +154,37 @@ document.addEventListener('DOMContentLoaded', function(event) {
             spendingGoal.innerText = `Spending Goal: ${budget.spending_goal}`;
             let savingsGoal = document.createElement('h5'); 
             savingsGoal.innerText = `Savings Goal: ${budget.savings_goal}`;
+
+            let deleteBudget = document.createElement('button');
+            deleteBudget.innerText = 'delete'; 
+            deleteBudget.setAttribute('class', 'delete-budget');
+            deleteBudget.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                let configObj = {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify( { id: budget.id })
+                }
+
+                fetch(`http://localhost:3000/users/${loggedIn}/budgets/${budget.id}`, configObj) 
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(object) {
+                    let budgetToDelete = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
+                    budgetToDelete.remove();
+                    console.log(object);
+                })
+            })
             let displayTransactions = document.createElement('button');
             displayTransactions.innerText = 'show';
             displayTransactions.setAttribute('class', 'display-transactions')
             displayTransactions.addEventListener('click', function(event) {
+                // change button to hide and hide the form
                 event.preventDefault();
                 fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
                 .then(function(response) {
@@ -164,12 +192,225 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 })
                 .then(function(object) {
                     console.log(object);
+                    // create table
+                    let headers = ['date', 'description', 'amount', 'edit', 'delete'];
+                    let table = document.createElement('table');
+                    let rowHeaders = document.createElement('tr');
+
+                    for (const header of headers) {
+                        let head = document.createElement('th');
+                        head.innerText = header;
+                        rowHeaders.appendChild(head);
+                    }
+                    table.appendChild(rowHeaders);
+
+                    function createTransaction(transaction) {
+                        let newRow = document.createElement('tr');
+                        newRow.setAttribute('transaction-data-id', `${transaction.id}`)
+                        let date = document.createElement('td');
+                        let amount = document.createElement('td');
+                        let description = document.createElement('td');
+                        let editCell = document.createElement('td');
+                        let editTrans = document.createElement('button');
+                        let deleteCell = document.createElement('td');
+                        let deleteTrans = document.createElement('button');
+            
+                        editTrans.innerText = 'edit';
+                        deleteTrans.innerText = 'delete';
+                        deleteTrans.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            let configObj = {
+                                method: "DELETE", 
+                                headers: { 
+                                    "Content-Type": "application/json", 
+                                    "Accept": "application/json"
+                                },
+                                body: JSON.stringify( {transaction_id: transaction.id})
+                            }
+                            fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
+                            .then(function(response) {
+                                return response.json();
+                            })
+                            .then(function(object) {
+                                let rowToDelete = document.querySelectorAll(`[transaction-data-id='${transaction.id}']`)[0]
+                                rowToDelete.remove();
+                                console.log(object);
+                            })
+                        })
+                        editCell.appendChild(editTrans);
+                        deleteCell.appendChild(deleteTrans);
+                        date.innerText = displayDate(transaction.date);
+                        amount.innerText = transaction.price;
+                        description.innerText = transaction.description;
+            
+                        newRow.appendChild(date);
+                        // figure out how to display this to float 2 
+                        newRow.appendChild(description);
+                        newRow.appendChild(amount); 
+                        // create row for total 
+                        newRow.appendChild(editCell);
+                        newRow.appendChild(deleteCell);
+                        table.appendChild(newRow);
+                    }
+
+                    // create form for new entry in table format 
+
+                    let newTransaction = document.createElement('form');
+                    let dateInput = document.createElement('input');
+                    dateInput.setAttribute('type', 'date');
+                    dateInput.setAttribute('min', `${budget.start_date}` )
+                    dateInput.setAttribute('max', `${budget.end_date}` )
+                    dateInput.name = 'date';
+                    // put max/min on date so it has to be within the month and no greater than today
+                    let amountInput = document.createElement('input');
+                    amountInput.setAttribute('type', 'number');
+                    amountInput.setAttribute('step', '.01');
+                    // dont let this be text
+                    amountInput.setAttribute('placeholder', 'amount');
+                    let descInput = document.createElement('input');
+                    descInput.setAttribute('type', 'text');
+                    descInput.setAttribute('placeholder', 'description');
+                    let submit = document.createElement('input');
+                    submit.setAttribute('type', 'submit');
+                    submit.innerText = 'log transaction';
+                    submit.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        let configObj = {
+                            method: "POST", 
+                            headers: {
+                                "Content-Type": "application/json", 
+                                "Accept": "application/json"
+                            },
+                            body: JSON.stringify( { date: dateInput.value, price: amountInput.value, description: descInput.value })
+                        }
+                        fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`, configObj)
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(object) {
+                            createTransaction(object);
+                            console.log(object);
+                        })
+                    })
+                    newTransaction.appendChild(dateInput);
+                    newTransaction.appendChild(amountInput);
+                    newTransaction.appendChild(descInput);
+                    newTransaction.appendChild(submit);
+
+                    div.appendChild(table);
+                    div.appendChild(newTransaction);
+
+                    // let newFormTable = document.createElement('table');
+                    // let formRow = document.createElement('tr');
+                    // let enterDate = document.createElement('td');
+                    // let enterAmount = document.createElement('td');
+                    // let enterDesc = document.createElement('td');
+                    // let submitCell = document.createElement('td')
+
+                    // let dateInput = document.createElement('input');
+                    // dateInput.setAttribute('type', 'date');
+                    // dateInput.name = 'date';
+                    // enterDate.appendChild(dateInput);
+
+                    // let amountInput = document.createElement('input');
+                    // amountInput.setAttribute('type', 'number');
+                    // amountInput.setAttribute('step', '.01');
+                    // amountInput.setAttribute('placeholder', 'amount');
+                    // enterAmount.appendChild(amountInput);
+
+                    // let descInput = document.createElement('input');
+                    // descInput.setAttribute('type', 'text');
+                    // descInput.setAttribute('placeholder', 'description');
+                    // enterDesc.appendChild(descInput);
+
+                    // let submit = document.createElement('input');
+                    // submit.setAttribute('type', 'submit');
+                    // submit.innerText = 'log transaction';
+                    // submitCell.appendChild(submit);
+
+                    // formRow.appendChild(enterDate);
+                    // formRow.appendChild(enterAmount);
+                    // formRow.appendChild(enterDesc);
+                    // formRow.appendChild(submitCell);
+
+                    // newFormTable.appendChild(formRow);
+                    // newTransaction.appendChild(newFormTable);
+
+
+                    // submit.addEventListener('click', function(event) {
+                    //     // let configObj = {
+                    //     //     method: "POST", 
+                    //     //     headers: {
+                    //     //         "Content-Type": "application/json", 
+                    //     //         "Accept": "application/json"
+                    //     //     },
+                    //     //     body: JSON.stringify( { date: dateInput.value, price: amountInput.value, description: descInput.value } )
+                    //     // }
+
+                    //     let configObj = {
+                    //         method: "POST", 
+                    //         headers: {
+                    //             "Content-Type": "application/json",
+                    //             "Accept": "application/json"
+                    //         },
+                    //         body: JSON.stringify( { date: dateInput.value })
+                    //     }
+
+                    //     fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`, configObj)
+                    //     .then(function(response) {
+                    //         return response.json();
+                    //     })
+                    //     .then(function(object) {
+                    //         console.log(object);
+                    //     })
+                    // })
+                    //     fetch(`http://localhost:3000/users`, {
+                    //         method: "POST",
+                    //         headers: {
+                    //             'Content-Type': 'application/json', 
+                    //             'Accept': 'application/json'
+                    //         },
+                    //         body: JSON.stringify( { 
+                    //             date: dateInput.value, 
+                    //             price: amountInput.value,
+                    //             description: descInput.value,
+                    //         })
+                    //     })
+                    //     .then(function(response) {
+                    //         return response.json();
+                    //     })
+                    //     .then(function(object) {
+                    //         console.log(object);
+                    //     })
+                    // })
+
+                    // create an entry for each transaction
+                    for (const transaction of object) {
+                        // let newRow = document.createElement('tr');
+                        // let date = document.createElement('td')
+                        // let amount = document.createElement('td')
+                        // let description = document.createElement('td')
+
+                        // date.innerText = displayDate(transaction.date);
+                        // amount.innerText = transaction.price;
+                        // description.innerText = transaction.description;
+
+                        // newRow.appendChild(date);
+                        // newRow.appendChild(amount);
+                        // // figure out how to display this to float 2 
+                        // newRow.appendChild(description);
+                        // table.appendChild(newRow);
+                        createTransaction(transaction);
+                        console.log(transaction);
+                    }
+
                 })
-                // grab all transactions and display in a table format. 
                 // also new form at top to create new transaction
+
             })
             div.appendChild(budgetTitle);
             div.appendChild(displayTransactions);
+            div.appendChild(deleteBudget);
             div.appendChild(budgetDates);
             div.appendChild(expectedIncome);
             div.appendChild(spendingGoal);
@@ -182,105 +423,3 @@ document.addEventListener('DOMContentLoaded', function(event) {
         return dateArray.join('-');
     }
 })
-
-
-
-        //             addPoke.addEventListener('click', function(e) {
-//                 let configObj = {
-//                     method: "POST",
-//                     headers: {
-//                         "Content-Type": "application/json",
-//                         "Accept": "application/json"
-//                     },
-//                     body: JSON.stringify({trainer_id: `${trainer.id}`})
-//                 }
-//                 fetch("http://localhost:3000/pokemons", configObj)
-//                 .then(function(response) {
-//                     return response.json();
-//                 })
-//                 .then(function(object) {
-//                     createPokemon(object);
-//                 })
-//             })
-//     }
-// })
-//     // first, I need to fetch all of the trainers from localhost:3000/trainers
-//     fetch("http://localhost:3000/trainers")
-//     .then(function(response) {
-//         return response.json();
-//     })
-//     .then(function(json) {
-//         console.log(json[0].pokemons);
-//         createTrainers(json);
-//     })
-
-//     function createTrainers(trainers) {
-//         let main = document.getElementsByTagName('main')[0]
-
-//         for (const trainer of trainers) {
-//             let div = document.createElement('div')
-//             div.setAttribute('data-id', trainer.id)
-//             main.appendChild(div)
-//             let ul = document.createElement('ul')
-//             div.appendChild(ul)
-//             let addPoke = document.createElement('button')
-//             addPoke.setAttribute('data-trainer-id', trainer.id)
-//             addPoke.textContent = 'Add Pokemon'
-//             ul.appendChild(addPoke)
-//             addPoke.addEventListener('click', function(e) {
-//                 let configObj = {
-//                     method: "POST",
-//                     headers: {
-//                         "Content-Type": "application/json",
-//                         "Accept": "application/json"
-//                     },
-//                     body: JSON.stringify({trainer_id: `${trainer.id}`})
-//                 }
-//                 fetch("http://localhost:3000/pokemons", configObj)
-//                 .then(function(response) {
-//                     return response.json();
-//                 })
-//                 .then(function(object) {
-//                     createPokemon(object);
-//                 })
-//             })
-
-//             for (const pokemon of trainer.pokemons) {
-//                 createPokemon(pokemon)
-//             }
-
-//             function createPokemon(pokemon) {
-//                 let li = document.createElement('li')
-//                 li.textContent = `${pokemon.nickname} (${pokemon.species})`
-//                 let releasePoke = document.createElement('button')
-//                 releasePoke.setAttribute('class', 'release')
-//                 releasePoke.setAttribute('data-pokemon-id', pokemon.id)
-//                 releasePoke.addEventListener('click', function(event) {
-//                     let configObj = {
-//                         method: "DELETE", 
-//                         headers: {
-//                             "Content-Type": "application/json",
-//                             "Accept": "application/json"
-//                         },
-//                         body: JSON.stringify({pokemon_id: `${pokemon.id}`})
-//                     }
-
-//                     fetch(`http://localhost:3000/pokemons/${pokemon.id}`, configObj)
-//                     .then(function(response) {
-//                         return response.json();
-//                     })
-//                     .then(function(object) {
-//                         let btn = document.querySelectorAll(`[data-pokemon-id='${pokemon.id}']`)[0]
-//                         let li = btn.parentElement
-//                         li.remove();
-//                         btn.remove();
-//                     })
-//                 })
-//                 releasePoke.textContent = 'Release'
-//                 li.appendChild(releasePoke)
-//                 ul.appendChild(li)
-//             }
-//         }
-//     }
-
-// })

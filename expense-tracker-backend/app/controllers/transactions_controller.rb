@@ -7,6 +7,18 @@ class TransactionsController < ApplicationController
     end 
 
     def create 
+        transaction = Transaction.new(:budget_id => params[:budget_id])
+        transaction.date = params[:date]
+        transaction.price = params[:price]
+        transaction.description = params[:description]
+        transaction.save 
+
+        render :json => transaction 
+    end 
+
+    def destroy 
+        transaction = Transaction.find_by_id(params[:transaction_id]).destroy
+        render :json => transaction
     end 
 
     # need update, delete
