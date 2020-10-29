@@ -1,0 +1,11 @@
+.transactions-container {
+    display: table;
+}
+
+.row  {
+    display: table-row;
+}
+
+.col-one, .col-two, .col-three, .col-four, .col-five {
+    display: table-cell;
+}
