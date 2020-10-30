@@ -16,6 +16,12 @@ class TransactionsController < ApplicationController
         render :json => transaction 
     end 
 
+    def update 
+        transaction = Transaction.find_by_id(params[:id])
+        transaction.update(:date => params[:date], :price => params[:price], :description => params[:description])
+        render :json => transaction
+    end 
+
     def destroy 
         transaction = Transaction.find_by_id(params[:transaction_id]).destroy
         render :json => transaction

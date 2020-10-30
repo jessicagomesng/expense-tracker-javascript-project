@@ -6,6 +6,9 @@ Rails.application.routes.draw do
     end 
   end 
 
+  # resources :budgets 
+  # resources :transactions
+
   # resources :budgets do 
   #   resources :transactions 
   # end

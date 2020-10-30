@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         // sort these by chronological date
         // render new budget form
         let addBudget = document.createElement('button')
-        addBudget.setAttribute('class', 'create-budget');
+        addBudget.setAttribute('class', 'create-budget button');
         addBudget.innerText = 'Create Budget';
         addBudget.addEventListener('click', function(event) {
             addBudget.style.display = 'none';
@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         newExpectedIncome.setAttribute('type', 'text')
         newExpectedIncome.name = 'expected_income';
         let submitBudget = document.createElement('button');
+        submitBudget.setAttribute('class', 'button')
         submitBudget.innerText = 'Create';
 
         let formChildren = [selectMonth, savingsLabel, newSavingsGoal, spendingLabel, newSpendingGoal, incomeLabel, newExpectedIncome, submitBudget]
@@ -107,13 +108,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }, 
-            body: JSON.stringify({ month: selectMonth.value, 
+            body: JSON.stringify({ 
+                user_id: loggedIn.id,
+                month: selectMonth.value, 
                 savings_goal: newSavingsGoal.value, 
                 spending_goal: newSpendingGoal.value, 
                 expected_income: newExpectedIncome.value })
             }
 
-            fetch(`http://localhost:3000/users/${loggedIn.id}/budgets`, configObj) 
+            fetch(`http://localhost:3000/budgets`, configObj) 
             .then(function(response) {
                 return response.json();
             })
@@ -131,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         let div = document.createElement('div');
         div.setAttribute('budget-data-id', budget.id);
         let budgetTitle = document.createElement('h3');
+        budgetTitle.setAttribute('class', 'item-one')
         budgetTitle.innerText = budget.name;
         let budgetDates = document.createElement('h6');
         budgetDates.innerText = displayDate(budget.start_date) + ' to ' + displayDate(budget.end_date);
@@ -142,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         savingsGoal.innerText = `Savings Goal: ${budget.savings_goal}`;
         let deleteBudget = document.createElement('button');
         deleteBudget.innerText = 'delete'; 
-        deleteBudget.setAttribute('class', 'delete-budget');
+        deleteBudget.setAttribute('class', 'delete-budget button');
         deleteBudget.addEventListener('click', function(e) {
             e.preventDefault()
             let configObj = {
@@ -166,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         let displayTransactions = document.createElement('button');
         displayTransactions.innerText = 'show';
-        displayTransactions.setAttribute('class', 'display-transactions');
+        displayTransactions.setAttribute('class', 'display-transactions button');
         displayTransactions.addEventListener('click', function(event) {
             event.preventDefault();
             fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
@@ -175,20 +179,27 @@ document.addEventListener('DOMContentLoaded', function(event) {
             })
             .then(function(object) {
                 console.log(object);
-                renderTransactions(div, object);
+                renderTransactions(budget, object);
                 // create table w transactions here. Create form & render transactions.
             })
         })
+        let budgetHeader = document.createElement('div');
+        budgetHeader.setAttribute('class', 'budget-header');
+        budgetHeader.appendChild(budgetTitle);
+        budgetHeader.appendChild(deleteBudget);
+        budgetHeader.appendChild(displayTransactions);
 
-        let budgetEntries = [budgetTitle, budgetDates, expectedIncome, spendingGoal, savingsGoal, deleteBudget, displayTransactions]
+        let budgetEntries = [budgetHeader, budgetDates, expectedIncome, spendingGoal, savingsGoal]
 
         for (const entry of budgetEntries) {
             div.appendChild(entry);
         }
+
+
         container.appendChild(div);
     }
 
-    function renderTransactions(budgetDiv, transactions) {
+    function renderTransactions(budget, transactions) {
         // create transaction table -- shall I move this elsewhere?
         let headers = ['date', 'description', 'amount', 'edit', 'delete'];
         let table = document.createElement('div');
@@ -224,72 +235,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         table.appendChild(horizontal);
 
-        function renderTransaction(transaction) {
-            let renderDate = document.createElement('p');
-            renderDate.innerText = displayDate(transaction.date);
-            renderDate.setAttribute('class', `transaction-${transaction.id}`)
-            let renderDesc = document.createElement('p');
-            renderDesc.innerText = transaction.description;
-            renderDesc.setAttribute('class', `transaction-${transaction.id}`)
-            let renderAmt = document.createElement('p');
-            renderAmt.innerText = transaction.price;
-            renderAmt.setAttribute('class', `transaction-${transaction.id}`)
-            let renderEdit = document.createElement('button');
-            renderEdit.innerText = 'X';
-            renderEdit.setAttribute('class', `transaction-${transaction.id}`)
-            let br = document.createElement('br');
-            renderEdit.addEventListener('click', function(event) {
-                event.preventDefault();
-            })
-            let renderDelete = document.createElement('button');
-            renderDelete.innerText = 'X';
-            renderDelete.setAttribute('class', `transaction-${transaction.id}`)
-            renderDelete.addEventListener('click', function(event) {
-                event.preventDefault();
-                let configObj = {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json", 
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify( { transaction_id: transaction.id } )
-                }
-                fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(object) {
-                    let elementsToDelete = document.getElementsByClassName(`transactions-${transaction.id}`);
-                    for (const entry of elementsToDelete) {
-                        entry.remove();
-                        console.log(entry);
-                    }
-                })
-            })
-
-            colOne.appendChild(renderDate);
-            colTwo.appendChild(renderDesc);
-            colThree.appendChild(renderAmt);
-            colFour.appendChild(renderEdit);
-            colFive.appendChild(renderDelete);
-        }
-
-        let columns = [colOne, colTwo, colThree, colFour, colFive];
-        for (const column of columns) {
-            horizontal.appendChild(column);
-        }
-
-        for (const transaction of transactions) {
-            renderTransaction(transaction);
-        }
-        budgetDiv.appendChild(table);
-
         // create new transaction form here
         let newTransactionForm = document.createElement('form');
+        newTransactionForm.setAttribute('class', 'new-transaction form')
         let dateInput = document.createElement('input');
         dateInput.setAttribute('type', 'date')
-        // dateInput.setAttribute('min', `${budget.start_date}`)
-        // dateInput.setAttribute('max', `${budget.end_date}`)
+        dateInput.setAttribute('min', `${budget.start_date}`)
+        dateInput.setAttribute('max', `${budget.end_date}`)
         dateInput.name = 'date';
         let amountInput = document.createElement('input');
         amountInput.setAttribute('type', 'number');
@@ -319,33 +271,182 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 console.log(object);
             })
         })
+                
+        // create new row for form
+        let formRow = document.createElement('div');
+        formRow.setAttribute('class', 'new-transaction row')
+        let formElements = [dateInput, amountInput, descInput, submit];
+        for (const element of formElements) {
+            newTransactionForm.appendChild(element);
+        }
+        // let rTcO = document.createElement('div');
+        // rTcO.setAttribute('class', 'col-one');
+        // rTcO.appendChild(formLabel);
+        // let rTcT = document.createElement('div');
+        // rTcT.setAttribute('class', 'col-two');
+        // rTcT.appendChild(dateInput);
+        // let rTcTh = document.createElement('div');
+        // rTcTh.setAttribute('class', 'col-three');
+        // rTcTh.appendChild(amountInput);
+        // let rTcF = document.createElement('div');
+        // rTcF.setAttribute('class', 'col-four');
+        // rTcF.appendChild(descInput);
+        // let rTcFi = document.createElement('div');
+        // rTcFi.setAttribute('class', 'col-five');
+        // rTcFi.appendChild(submit);
 
-// create new row for form
-        let rowTwo = document.createElement('div');
-        rowTwo.setAttribute('class', 'row')
-        let rTcO = document.createElement('div');
-        rTcO.setAttribute('class', 'col-one');
-        rTcO.appendChild(dateInput);
-        let rTcT = document.createElement('div');
-        rTcT.setAttribute('class', 'col-two');
-        rTcT.appendChild(amountInput);
-        let rTcTh = document.createElement('div');
-        rTcTh.setAttribute('class', 'col-three');
-        rTcTh.appendChild(descInput);
-        let rTcF = document.createElement('div');
-        rTcF.setAttribute('class', 'col-four');
-        rTcF.appendChild(submit);
-        let rTcFi = document.createElement('div');
-        rTcFi.setAttribute('class', 'col-five');
+        // newTransactionForm.appendChild(rTcO);
+        // newTransactionForm.appendChild(rTcT);
+        // newTransactionForm.appendChild(rTcTh);
+        // newTransactionForm.appendChild(rTcF);
+        // newTransactionForm.appendChild(rTcFi);
+        formRow.appendChild(newTransactionForm);
 
-        newTransactionForm.appendChild(rTcO);
-        newTransactionForm.appendChild(rTcT);
-        newTransactionForm.appendChild(rTcTh);
-        newTransactionForm.appendChild(rTcF);
-        newTransactionForm.appendChild(rTcFi);
-        rowTwo.appendChild(newTransactionForm);
+        table.appendChild(formRow);
+        
 
-        table.appendChild(rowTwo);
+        function renderTransaction(transaction) {
+            let newRow = document.createElement('div');
+            newRow.setAttribute('class', `transaction-${transaction.id} row`);
+            let newColOne = document.createElement('div');
+            newColOne.setAttribute('class', 'col-one');
+            let newColTwo = document.createElement('div');
+            newColTwo.setAttribute('class', 'col-two');
+            let newColThree = document.createElement('div');
+            newColThree.setAttribute('class', 'col-three');
+            let newColFour = document.createElement('div');
+            newColFour.setAttribute('class', 'col-four');
+            let newColFive = document.createElement('div');
+            newColFive.setAttribute('class', 'col-five');
+
+            let renderDate = document.createElement('p');
+            renderDate.innerText = displayDate(transaction.date);
+            let renderDesc = document.createElement('p');
+            renderDesc.innerText = transaction.description;
+            let renderAmt = document.createElement('p');
+            renderAmt.innerText = transaction.price;
+            let renderEdit = document.createElement('button');
+            renderEdit.setAttribute('class', 'button');
+            renderEdit.innerText = 'X';
+            renderEdit.addEventListener('click', function(event) {
+                event.preventDefault();
+                // create edit form
+                let editTransactionForm = document.createElement('form');
+                let editDate = document.createElement('input');
+                editDate.setAttribute('type', 'date')
+                editDate.setAttribute('min', `${budget.start_date}`)
+                editDate.setAttribute('max', `${budget.end_date}`)
+                editDate.name = 'date';
+                editDate.value = transaction.date;
+                let editAmt = document.createElement('input');
+                editAmt.setAttribute('type', 'number');
+                editAmt.setAttribute('placeholder', 'amount');
+                editAmt.value = transaction.price;
+                let editDesc = document.createElement('input');
+                editDesc.setAttribute('type', 'text');
+                editDesc.setAttribute('placeholder', 'description');
+                editDesc.value = transaction.description;
+                let submitEdit = document.createElement('input');
+                submitEdit.setAttribute('class', 'button');
+                submitEdit.setAttribute('type', 'submit');
+                submitEdit.setAttribute('value', 'edit')
+                submitEdit.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    let configObj = {
+                        method: "PATCH",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify( { date: editDate.value, price: editAmt.value, description: editDesc.value })
+                    }
+
+                    fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(object) {
+                        renderTransaction(object);
+                        console.log(object);
+                    })
+                })
+                editTransactionForm.appendChild(editDate);
+                editTransactionForm.appendChild(editAmt);
+                editTransactionForm.appendChild(editDesc);
+                editTransactionForm.appendChild(submitEdit);
+                newRow.innerHTML = '';
+                newRow.appendChild(editTransactionForm);
+                // let submit = document.createElement('input');
+                // submit.setAttribute('type', 'submit');
+                // submit.setAttribute('value', 'log transaction');
+                // replace contents of newRow with edit form
+
+                // let configObj = {
+                //     method: "PATCH",
+                //     headers: { 
+                //         "Content-Type": "application/json",
+                //         "Accept": "application/json"
+                //     },
+                //     body: JSON.stringify( {transaction_id: transaction.id })
+                // }
+
+                // fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
+                // .then(function(response) {
+                //     response.json();
+                // })
+                // .then(function(object) {
+                //     console.log(object);
+                // })
+
+            })
+            let renderDelete = document.createElement('button');
+            renderDelete.innerText = 'X';
+            renderDelete.setAttribute('class', `button`)
+            renderDelete.addEventListener('click', function(event) {
+                event.preventDefault();
+                let configObj = {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json", 
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify( { transaction_id: transaction.id } )
+                }
+                fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(object) {
+                    let rowToDelete =document.getElementsByClassName(`transaction-${object.id}`)[0];
+                    rowToDelete.remove();
+                })
+            })
+
+            newColOne.appendChild(renderDate);
+            newColTwo.appendChild(renderDesc);
+            newColThree.appendChild(renderAmt);
+            newColFour.appendChild(renderEdit);
+            newColFive.appendChild(renderDelete);
+
+            let clmns = [newColOne, newColTwo, newColThree, newColFour, newColFive];
+
+            for (let column of clmns) {
+                newRow.appendChild(column);
+            }
+
+            table.appendChild(newRow);
+        }
+
+        let columns = [colOne, colTwo, colThree, colFour, colFive];
+        for (const column of columns) {
+            horizontal.appendChild(column);
+        }
+
+        for (const transaction of transactions) {
+            renderTransaction(transaction);
+        }
+        let budgetDiv = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
+        budgetDiv.appendChild(table);
 
     }
 
