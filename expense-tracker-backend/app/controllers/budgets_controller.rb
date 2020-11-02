@@ -17,6 +17,13 @@ class BudgetsController < ApplicationController
         # need update
     end 
 
+    def update 
+        user = User.find_by_id(params[:user_id])
+        budget = user.budgets.find_by_id(params[:id])
+        budget.update(:spending_goal => params[:spending_goal], :savings_goal => params[:savings_goal], :expected_income => params[:expected_income])
+        render :json => budget
+    end 
+
     def destroy 
         # should i write this so it's user.budgets 
         budget = Budget.find_by_id(params[:id]).destroy 
