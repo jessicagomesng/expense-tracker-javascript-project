@@ -3,9 +3,18 @@ const BASE_URL = "http://localhost:3000"
 document.addEventListener('DOMContentLoaded', function(event) {
     let logIn = document.getElementsByClassName('signup-form')[0];
     let input = document.getElementsByTagName('input');
-    let main = document.getElementsByTagName('main');
     let container = document.getElementsByClassName('container')[0];
     let loggedIn = null;
+    let addBudget = document.createElement('button')
+    addBudget.setAttribute('class', 'create-budget button');
+    addBudget.innerText = 'Create Budget';
+    addBudget.addEventListener('click', function(event) {
+        addBudget.style.display = 'none';
+        renderBudgetForm();
+    })
+
+    let table = document.createElement('div');
+
 
     logIn.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -26,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             loggedIn = object; 
             localStorage.loggedIn = object.id;
             renderLoggedInPage();
-            console.log(object);
         })
     })
 
@@ -37,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             return response.json();
         })
         .then(function(object) {
-            console.log(object);
             listBudgets(object);
         })
     }
@@ -45,13 +52,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
     function listBudgets(budgets) {
         // sort these by chronological date
         // render new budget form
-        let addBudget = document.createElement('button')
-        addBudget.setAttribute('class', 'create-budget button');
-        addBudget.innerText = 'Create Budget';
-        addBudget.addEventListener('click', function(event) {
-            addBudget.style.display = 'none';
-            createBudgetForm();
-        })
+        // let createBudget = document.createElement('button');
+        // createBudget.setAttribute('class', 'create-budget button');
+        // createBudget.innerText = 'Create Budget';
+        // createBudget.addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     renderBudgetForm();
+        // })
         container.appendChild(addBudget);
         // render all budgets
         for (const budget of budgets) {
@@ -59,16 +66,14 @@ document.addEventListener('DOMContentLoaded', function(event) {
         }
     }
 
-    function createBudgetForm() {
-        let form = document.createElement('form');
-        form.setAttribute('class', 'create-budget');
-
+    function renderBudgetForm() {
+        let newBudgetForm = document.createElement('form');
+        newBudgetForm.setAttribute('class', 'create-budget');
         let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
         let selectMonth = document.createElement('select');
         selectMonth.id = 'select-month';
-
-        for (let i = 0; i < months.length; i++) {
+        
+        for (let i = 0; i < months.length; i++ ) {
             let option = document.createElement('option');
             option.value = months[i];
             option.innerText = months[i];
@@ -77,30 +82,34 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         let savingsLabel = document.createElement('label');
         savingsLabel.innerText = 'Savings Goal:'
+
         let newSavingsGoal = document.createElement('input'); 
         newSavingsGoal.setAttribute('type', 'text');
         newSavingsGoal.name = 'savings_goal';
+
         let spendingLabel = document.createElement('label');
         spendingLabel.innerText = "Spending Goal:"
         let newSpendingGoal = document.createElement('input');
         newSpendingGoal.setAttribute('type', 'text');
         newSpendingGoal.name = 'spending_goal';
+
         let incomeLabel = document.createElement('label');
         incomeLabel.innerText = 'Expected Income:'
         let newExpectedIncome = document.createElement('input'); 
         newExpectedIncome.setAttribute('type', 'text')
         newExpectedIncome.name = 'expected_income';
+
         let submitBudget = document.createElement('button');
         submitBudget.setAttribute('class', 'button')
         submitBudget.innerText = 'Create';
 
         let formChildren = [selectMonth, savingsLabel, newSavingsGoal, spendingLabel, newSpendingGoal, incomeLabel, newExpectedIncome, submitBudget]
-
+            
         for (const element of formChildren) {
-            form.appendChild(element);
+            newBudgetForm.appendChild(element);
         }
 
-        form.addEventListener('submit', function(event) {
+        newBudgetForm.addEventListener('submit', function(event) {
             event.preventDefault();
             let configObj = {
             method: "POST",
@@ -115,19 +124,19 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 spending_goal: newSpendingGoal.value, 
                 expected_income: newExpectedIncome.value })
             }
-
-            fetch(`http://localhost:3000/budgets`, configObj) 
+    
+            fetch(`http://localhost:3000/users/${loggedIn.id}/budgets`, configObj) 
             .then(function(response) {
                 return response.json();
             })
             .then(function(object) {
-                form.reset();
-                console.log(object);
+                newBudgetForm.remove();
+                addBudget.style.display = 'inline-block';
                 renderBudget(object);
             })
-
         })
-        container.prepend(form);
+
+        container.prepend(newBudgetForm);
     }
 
     function renderBudget(budget) {
@@ -148,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         deleteBudget.innerText = 'delete'; 
         deleteBudget.setAttribute('class', 'delete-budget button');
         deleteBudget.addEventListener('click', function(e) {
-            e.preventDefault()
+            e.preventDefault();
             let configObj = {
                 method: "DELETE",
                 headers: {
@@ -164,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             .then(function(object) {
                 let budgetToDelete = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
                 budgetToDelete.remove();
-                console.log(object);
             })
         })
 
@@ -178,9 +186,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 return response.json();
             })
             .then(function(object) {
-                console.log(object);
                 renderTransactions(budget, object);
-                // create table w transactions here. Create form & render transactions.
             })
         })
 
@@ -258,9 +264,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     console.log(object);
                     editForm.reset();
                     editForm.style.display = 'none';
-                    expectedIncome.value = object.expected_income;
-                    spendingGoal.value = object.spending_goal;
-                    savingsGoal.value = object.savings_goal;
+                    renderBudget(object);
+                    // expectedIncome.value = object.expected_income;
+                    // spendingGoal.value = object.spending_goal;
+                    // savingsGoal.value = object.savings_goal;
                     // editForm.reset();
                     // console.log(object);
                     // renderBudget(object);
@@ -286,43 +293,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         container.appendChild(div);
     }
 
-    function renderTransactions(budget, transactions) {
-        // create transaction table -- shall I move this elsewhere?
-        let headers = ['date', 'description', 'amount', 'edit', 'delete'];
-        let table = document.createElement('div');
-        table.setAttribute('class', 'transactions-container');
-        let horizontal = document.createElement('div');
-        horizontal.setAttribute('class', 'row')
-        let colOne = document.createElement('div');
-        colOne.setAttribute('class', 'col-one');
-        let colTwo = document.createElement('div');
-        colTwo.setAttribute('class', 'col-two');
-        let colThree = document.createElement('div');
-        colThree.setAttribute('class', 'col-three');
-        let colFour = document.createElement('div');
-        colFour.setAttribute('class', 'col-four');
-        let colFive = document.createElement('div');
-        colFive.setAttribute('class', 'col-five');
-
-        let dateHeader = document.createElement('h4');
-        dateHeader.innerText = headers[0];
-        colOne.appendChild(dateHeader);
-        let descHeader = document.createElement('h4');
-        descHeader.innerText = headers[1];
-        colTwo.appendChild(descHeader);
-        let amtHeader = document.createElement('h4');
-        amtHeader.innerText = headers[2];
-        colThree.appendChild(amtHeader);
-        let editHeader = document.createElement('h4');
-        editHeader.innerText = headers[3];
-        colFour.appendChild(editHeader);
-        let delHeader = document.createElement('h4');
-        delHeader.innerText = headers[4];
-        colFive.appendChild(delHeader);
-
-        table.appendChild(horizontal);
-
-        // create new transaction form here
+    function createTransactionForm(budget) {
         let newTransactionForm = document.createElement('form');
         newTransactionForm.setAttribute('class', 'new-transaction form')
         let dateInput = document.createElement('input');
@@ -366,6 +337,104 @@ document.addEventListener('DOMContentLoaded', function(event) {
         for (const element of formElements) {
             newTransactionForm.appendChild(element);
         }
+        formRow.appendChild(newTransactionForm);
+        table.appendChild(formRow);
+    }
+
+        let columns = [colOne, colTwo, colThree, colFour, colFive];
+        for (const column of columns) {
+            horizontal.appendChild(column);
+        }
+
+        for (const transaction of transactions) {
+            renderTransaction(transaction);
+        }
+        let budgetDiv = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
+        budgetDiv.appendChild(table);
+
+    }
+
+    function renderTransactions(budget, transactions) {
+        // create transaction table -- shall I move this elsewhere?
+        let headers = ['date', 'description', 'amount', 'edit', 'delete'];
+        table.setAttribute('class', 'transactions-container');
+        let horizontal = document.createElement('div');
+        horizontal.setAttribute('class', 'row')
+        let colOne = document.createElement('div');
+        colOne.setAttribute('class', 'col-one');
+        let colTwo = document.createElement('div');
+        colTwo.setAttribute('class', 'col-two');
+        let colThree = document.createElement('div');
+        colThree.setAttribute('class', 'col-three');
+        let colFour = document.createElement('div');
+        colFour.setAttribute('class', 'col-four');
+        let colFive = document.createElement('div');
+        colFive.setAttribute('class', 'col-five');
+
+        let dateHeader = document.createElement('h4');
+        dateHeader.innerText = headers[0];
+        colOne.appendChild(dateHeader);
+        let descHeader = document.createElement('h4');
+        descHeader.innerText = headers[1];
+        colTwo.appendChild(descHeader);
+        let amtHeader = document.createElement('h4');
+        amtHeader.innerText = headers[2];
+        colThree.appendChild(amtHeader);
+        let editHeader = document.createElement('h4');
+        editHeader.innerText = headers[3];
+        colFour.appendChild(editHeader);
+        let delHeader = document.createElement('h4');
+        delHeader.innerText = headers[4];
+        colFive.appendChild(delHeader);
+
+        table.appendChild(horizontal);
+
+        createTransactionForm(budget);
+
+        // create new transaction form here
+        // let newTransactionForm = document.createElement('form');
+        // newTransactionForm.setAttribute('class', 'new-transaction form')
+        // let dateInput = document.createElement('input');
+        // dateInput.setAttribute('type', 'date')
+        // dateInput.setAttribute('min', `${budget.start_date}`)
+        // dateInput.setAttribute('max', `${budget.end_date}`)
+        // dateInput.name = 'date';
+        // let amountInput = document.createElement('input');
+        // amountInput.setAttribute('type', 'number');
+        // amountInput.setAttribute('placeholder', 'amount');
+        // let descInput = document.createElement('input');
+        // descInput.setAttribute('type', 'text');
+        // descInput.setAttribute('placeholder', 'description');
+        // let submit = document.createElement('input');
+        // submit.setAttribute('type', 'submit');
+        // submit.setAttribute('value', 'log transaction');
+        // submit.addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     let configObj = {
+        //         method: "POST", 
+        //         headers: {
+        //             "Content-Type": "application/json", 
+        //             "Accept": "application/json"
+        //         },
+        //         body: JSON.stringify( { date: dateInput.value, price: amountInput.value, description: descInput.value })
+        //     }
+        //     fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`, configObj)
+        //     .then(function(response) {
+        //         return response.json();
+        //     })
+        //     .then(function(object) {
+        //         renderTransaction(object);
+        //         console.log(object);
+        //     })
+        // })
+                
+        // // create new row for form
+        // let formRow = document.createElement('div');
+        // formRow.setAttribute('class', 'new-transaction row')
+        // let formElements = [dateInput, amountInput, descInput, submit];
+        // for (const element of formElements) {
+        //     newTransactionForm.appendChild(element);
+        // }
         // let rTcO = document.createElement('div');
         // rTcO.setAttribute('class', 'col-one');
         // rTcO.appendChild(formLabel);
@@ -386,106 +455,85 @@ document.addEventListener('DOMContentLoaded', function(event) {
         // newTransactionForm.appendChild(rTcT);
         // newTransactionForm.appendChild(rTcTh);
         // newTransactionForm.appendChild(rTcF);
-        // newTransactionForm.appendChild(rTcFi);
-        formRow.appendChild(newTransactionForm);
+        // newTransactionForm.appendChild(rTcFi);        
+    }
 
-        table.appendChild(formRow);
-        
+    function renderTransaction(budget, transaction) {
+        let newRow = document.createElement('div');
+        newRow.setAttribute('class', `transaction-${transaction.id} row`);
+        let newColOne = document.createElement('div');
+        newColOne.setAttribute('class', 'col-one');
+        let newColTwo = document.createElement('div');
+        newColTwo.setAttribute('class', 'col-two');
+        let newColThree = document.createElement('div');
+        newColThree.setAttribute('class', 'col-three');
+        let newColFour = document.createElement('div');
+        newColFour.setAttribute('class', 'col-four');
+        let newColFive = document.createElement('div');
+        newColFive.setAttribute('class', 'col-five');
 
-        function renderTransaction(transaction) {
-            let newRow = document.createElement('div');
-            newRow.setAttribute('class', `transaction-${transaction.id} row`);
-            let newColOne = document.createElement('div');
-            newColOne.setAttribute('class', 'col-one');
-            let newColTwo = document.createElement('div');
-            newColTwo.setAttribute('class', 'col-two');
-            let newColThree = document.createElement('div');
-            newColThree.setAttribute('class', 'col-three');
-            let newColFour = document.createElement('div');
-            newColFour.setAttribute('class', 'col-four');
-            let newColFive = document.createElement('div');
-            newColFive.setAttribute('class', 'col-five');
+        let renderDate = document.createElement('p');
+        renderDate.innerText = displayDate(transaction.date);
+        let renderDesc = document.createElement('p');
+        renderDesc.innerText = transaction.description;
+        let renderAmt = document.createElement('p');
+        renderAmt.innerText = transaction.price;
 
-            let renderDate = document.createElement('p');
-            renderDate.innerText = displayDate(transaction.date);
-            let renderDesc = document.createElement('p');
-            renderDesc.innerText = transaction.description;
-            let renderAmt = document.createElement('p');
-            renderAmt.innerText = transaction.price;
-            let renderEdit = document.createElement('button');
-            renderEdit.setAttribute('class', 'button');
-            renderEdit.innerText = 'X';
-            renderEdit.addEventListener('click', function(event) {
+        let renderEdit = document.createElement('button');
+        renderEdit.setAttribute('class', 'button');
+        renderEdit.innerText = 'X';
+        renderEdit.addEventListener('click', function(event) {
+            event.preventDefault();
+            let editTransactionForm = document.createElement('form');
+            let editDate = document.createElement('input');
+            editDate.setAttribute('type', 'date')
+            editDate.setAttribute('min', `${budget.start_date}`)
+            editDate.setAttribute('max', `${budget.end_date}`)
+            editDate.name = 'date';
+            editDate.value = transaction.date;
+            let editAmt = document.createElement('input');
+            editAmt.setAttribute('type', 'number');
+            editAmt.setAttribute('placeholder', 'amount');
+            editAmt.value = transaction.price;
+            let editDesc = document.createElement('input');
+            editDesc.setAttribute('type', 'text');
+            editDesc.setAttribute('placeholder', 'description');
+            editDesc.value = transaction.description;
+
+            let submitEdit = document.createElement('input');
+            submitEdit.setAttribute('class', 'button');
+            submitEdit.setAttribute('type', 'submit');
+            submitEdit.setAttribute('value', 'edit')
+            submitEdit.addEventListener('click', function(event) {
                 event.preventDefault();
-                // create edit form
-                let editTransactionForm = document.createElement('form');
-                let editDate = document.createElement('input');
-                editDate.setAttribute('type', 'date')
-                editDate.setAttribute('min', `${budget.start_date}`)
-                editDate.setAttribute('max', `${budget.end_date}`)
-                editDate.name = 'date';
-                editDate.value = transaction.date;
-                let editAmt = document.createElement('input');
-                editAmt.setAttribute('type', 'number');
-                editAmt.setAttribute('placeholder', 'amount');
-                editAmt.value = transaction.price;
-                let editDesc = document.createElement('input');
-                editDesc.setAttribute('type', 'text');
-                editDesc.setAttribute('placeholder', 'description');
-                editDesc.value = transaction.description;
-                let submitEdit = document.createElement('input');
-                submitEdit.setAttribute('class', 'button');
-                submitEdit.setAttribute('type', 'submit');
-                submitEdit.setAttribute('value', 'edit')
-                submitEdit.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    let configObj = {
-                        method: "PATCH",
-                        headers: { 
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify( { date: editDate.value, price: editAmt.value, description: editDesc.value })
-                    }
+                let configObj = {
+                    method: "PATCH",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify( { date: editDate.value, price: editAmt.value, description: editDesc.value })
+                }
 
-                    fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
-                    .then(function(response) {
-                        return response.json();
-                    })
-                    .then(function(object) {
-                        renderTransaction(object);
-                        console.log(object);
-                    })
+                fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
+                .then(function(response) {
+                    return response.json();
                 })
-                editTransactionForm.appendChild(editDate);
-                editTransactionForm.appendChild(editAmt);
-                editTransactionForm.appendChild(editDesc);
-                editTransactionForm.appendChild(submitEdit);
-                newRow.innerHTML = '';
-                newRow.appendChild(editTransactionForm);
-                // let submit = document.createElement('input');
-                // submit.setAttribute('type', 'submit');
-                // submit.setAttribute('value', 'log transaction');
-                // replace contents of newRow with edit form
-
-                // let configObj = {
-                //     method: "PATCH",
-                //     headers: { 
-                //         "Content-Type": "application/json",
-                //         "Accept": "application/json"
-                //     },
-                //     body: JSON.stringify( {transaction_id: transaction.id })
-                // }
-
-                // fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions/${transaction.id}`, configObj)
-                // .then(function(response) {
-                //     response.json();
-                // })
-                // .then(function(object) {
-                //     console.log(object);
-                // })
-
+                .then(function(object) {
+                    editTransactionForm.style.display = 'none';
+                    renderTransaction(object);
+                    console.log(object);
+                })
             })
+            editTransactionForm.appendChild(editDate);
+            editTransactionForm.appendChild(editAmt);
+            editTransactionForm.appendChild(editDesc);
+            editTransactionForm.appendChild(submitEdit);
+            newRow.innerHTML = '';
+            newRow.appendChild(editTransactionForm);
+        })
+    }
+
             let renderDelete = document.createElement('button');
             renderDelete.innerText = 'X';
             renderDelete.setAttribute('class', `button`)
@@ -521,21 +569,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 newRow.appendChild(column);
             }
 
-            table.appendChild(newRow);
+            table.prepend(newRow);
         }
-
-        let columns = [colOne, colTwo, colThree, colFour, colFive];
-        for (const column of columns) {
-            horizontal.appendChild(column);
-        }
-
-        for (const transaction of transactions) {
-            renderTransaction(transaction);
-        }
-        let budgetDiv = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
-        budgetDiv.appendChild(table);
-
-    }
 
     function displayDate(string) {
         let dateArray = string.split('-').reverse();
