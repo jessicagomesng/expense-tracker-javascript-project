@@ -7,8 +7,111 @@
     font-style: normal;
 }
 
-header {
+@font-face {
+    font-family: 'handwriting';
+    src: url('./assets/fonts/coveredbyyourgrace/CoveredByYourGrace.woff2') format('woff2'),
+        url('./assets/fonts/coveredbyyourgrace/CoveredByYourGrace.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'fantasque';
+    src: url('./assets/fonts/fantasque/FantasqueSansMono-Regular.woff2') format('woff2'),
+        url('./assets/fonts/fantasque/FantasqueSansMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'fantasque-bold';
+    src: url('./assets/fonts/fantasque/FantasqueSansMono-Bold.woff2') format('woff2'),
+        url('./assets/fonts/fantasque/FantasqueSansMono-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'fantasque-italic';
+    src: url('./assets/fonts/fantasque/FantasqueSansMono-Italic.woff2') format('woff2'),
+        url('./assets/fonts/fantasque/FantasqueSansMono-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'fantasque-bolditalic';
+    src: url('./assets/fonts/fantasque/FantasqueSansMono-BoldItalic.woff2') format('woff2'),
+        url('./assets/fonts/fantasque/FantasqueSansMono-BoldItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+h2 {
+    font-family: 'handwriting';
     text-align: center;
+    font-size: 45px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+h3 {
+    font-family: 'quicksand';
+    text-transform: uppercase;
+    margin: 10px;
+}
+
+h5 {
+    font-family: 'fantasque';
+    font-size: 14px;
+    font-style: italic;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 30px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+header { 
+    visibility: hidden;
+}
+
+header h2 {
+    text-align: center;
+    font-family: 'handwriting';
+    text-transform: uppercase;
+    color: #000;
+    letter-spacing: 2px;
+}
+
+.sign-in {
+    margin: auto;
+    width: 400px;
+    background-color: #C9F5B8;
+    padding: 50px 60px 50px 60px;
+}
+
+label {
+    font-family: 'fantasque';
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+input[type='text'] {
+    font-family: 'fantasque';
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin: 10px;
+    width: 390px;
 }
 
 body {
@@ -19,6 +122,10 @@ form.new-transaction {
     width: 795px;
 }
 
+.wrapper { 
+    width: 300px;
+}
+
 .button { 
     background-color: #C9F5B8; /* Green */
     border: 1px solid black;
@@ -27,10 +134,14 @@ form.new-transaction {
     font-size: 10px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    padding: 10px 10px;
+    padding: 5px 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
+}
+
+.centered-button {
+    text-align: center;
 }
 
 .button:hover {
@@ -51,21 +162,76 @@ form.new-transaction {
     display: table-cell;
 }
 
-div[budget-data-id] {
-    background-color: #E3E5E3;
+div.create-budget {
+    width: 1000px;
     padding: 10px;
-    margin: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+}
+
+.create-budget button {
+    align-self: flex-start;
+}
+
+div[budget-data-id] {
+    background-color: #C9F5B8;
+    width: 1000px;
+    padding: 10px;
+    margin-left: auto;
+    margin-right:auto;
+    margin-bottom: 30px;
+}
+
+div[transaction-data-id] {
+    background-color: #FFF;
+}
+
+p {
+    font-family: 'fantasque';
+    letter-spacing: 1px;
+    font-size: 13px;
 }
 
 .budget-header {
-    background-color: #fff;
+    background-color: #C9F5B8;
     display: flex;
     justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.budget-header button {
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+.dates-header h6 {
+    font-family: 'fantasque';
+    font-size: 12px;
+    font-style: italic;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: -5px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+}
+.budget-content {
+    background-color: #fff;
+    padding: 10px;
+    margin: 10px;
+}
+
+.budget-footer {
+    display: flex;
+}
+
+.budget-footer button {
+    margin-left: auto;
 }
 
 .item-one {
     flex-grow: 4;
-    font-family: arial;
 }
 
 .delete-budget {

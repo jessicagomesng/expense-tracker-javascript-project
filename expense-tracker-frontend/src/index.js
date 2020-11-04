@@ -1,10 +1,13 @@
 const BASE_URL = "http://localhost:3000"
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    let logIn = document.getElementsByClassName('signup-form')[0];
+    let logIn = document.getElementsByClassName('sign-in')[0];
     let input = document.getElementsByTagName('input');
     let container = document.getElementsByClassName('container')[0];
+    let header = document.getElementsByTagName('header')[0];
     let loggedIn = null;
+    let createBudgetDiv = document.createElement('div');
+    createBudgetDiv.setAttribute('class', 'create-budget');
     let addBudget = document.createElement('button')
     addBudget.setAttribute('class', 'create-budget button');
     addBudget.innerText = 'Create Budget';
@@ -12,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         addBudget.style.display = 'none';
         renderBudgetForm();
     })
+    createBudgetDiv.appendChild(addBudget);
 
     let table = document.createElement('div');
 
@@ -40,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     function renderLoggedInPage() {
         logIn.style.display = 'none';
+        header.style.visibility = 'visible';
         fetch(`http://localhost:3000/users/${loggedIn.id}/budgets`) 
         .then(function(response) {
             return response.json();
@@ -59,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         //     event.preventDefault();
         //     renderBudgetForm();
         // })
-        container.appendChild(addBudget);
+        container.appendChild(createBudgetDiv);
         // render all budgets
         for (const budget of budgets) {
             renderBudget(budget);
@@ -142,6 +147,14 @@ document.addEventListener('DOMContentLoaded', function(event) {
     function renderBudget(budget) {
         let div = document.createElement('div');
         div.setAttribute('budget-data-id', budget.id);
+        let budgetHeader = document.createElement('div');
+        budgetHeader.setAttribute('class', 'budget-header');
+        let datesHeader = document.createElement('div');
+        datesHeader.setAttribute('class', 'dates-header');
+        let budgetContent = document.createElement('div');
+        budgetContent.setAttribute('class', 'budget-content');
+        let budgetFooter = document.createElement('div');
+        budgetFooter.setAttribute('class', 'budget-footer');
         let budgetTitle = document.createElement('h3');
         budgetTitle.setAttribute('class', 'item-one')
         budgetTitle.innerText = budget.name;
@@ -154,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         let savingsGoal = document.createElement('h5'); 
         savingsGoal.innerText = `Savings Goal: ${budget.savings_goal}`;
         let deleteBudget = document.createElement('button');
-        deleteBudget.innerText = 'delete'; 
+        deleteBudget.innerText = 'delete budget'; 
         deleteBudget.setAttribute('class', 'delete-budget button');
         deleteBudget.addEventListener('click', function(e) {
             e.preventDefault();
@@ -177,9 +190,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
         })
 
         let displayTransactions = document.createElement('button');
-        displayTransactions.innerText = 'show';
+        displayTransactions.innerText = 'display transactions';
         displayTransactions.setAttribute('class', 'display-transactions button');
+        let hideTransactions = document.createElement('button');
+        hideTransactions.innerText = 'X';
+        hideTransactions.setAttribute('class', 'hide-transactions button');
         displayTransactions.addEventListener('click', function(event) {
+            // change this to hide transactions
             event.preventDefault();
             fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
             .then(function(response) {
@@ -187,14 +204,22 @@ document.addEventListener('DOMContentLoaded', function(event) {
             })
             .then(function(object) {
                 renderTransactions(budget, object);
+                displayTransactions.parentNode.replaceChild(hideTransactions, displayTransactions);
             })
+        })
+        hideTransactions.addEventListener('click', function(event) {
+            event.preventDefault();
+            let transactions = document.getElementsByClassName(`budget-${budget.id} transactions-container`)[0]
+            transactions.remove();
+            hideTransactions.parentNode.replaceChild(displayTransactions, hideTransactions);
         })
 
         let editBudget = document.createElement('button');
-        editBudget.innerText = 'edit';
+        editBudget.innerText = 'edit budget';
         editBudget.setAttribute('class', 'edit-budget button');
         editBudget.addEventListener('click', function(event) {
             event.preventDefault();
+            budgetContent.style.display = 'none';
             let editForm = document.createElement('form');
             editForm.setAttribute('class', 'edit-budget');
     
@@ -212,8 +237,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
             // selectMonth.value = budget.name.replace(' 2020', '')
 
-            let monthLabel = document.createElement('h3');
-            monthLabel.innerText = budget.name;
             let savingsLabel = document.createElement('label');
             savingsLabel.innerText = 'Savings Goal:'
             let editSavings = document.createElement('input'); 
@@ -232,14 +255,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
             editIncome.setAttribute('type', 'text')
             editIncome.name = 'expected_income';
             editIncome.value = budget.expected_income;
-            let submitBudget = document.createElement('button');
-            submitBudget.setAttribute('class', 'button')
-            submitBudget.innerText = 'edit';
+            let editBudget = document.createElement('button');
+            editBudget.setAttribute('class', 'button')
+            editBudget.innerText = 'edit budget';
     
-            let formChildren = [monthLabel, savingsLabel, spendingLabel, incomeLabel, editIncome, editSpending, editSavings, submitBudget]
+            let formChildren = [incomeLabel, editIncome, spendingLabel, editSpending, savingsLabel, editSavings, editBudget]
     
             for (const element of formChildren) {
                 editForm.appendChild(element);
+                let br = document.createElement('br');
+                editForm.appendChild(br);
             }
     
             editForm.addEventListener('submit', function(event) {
@@ -264,7 +289,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     console.log(object);
                     editForm.reset();
                     editForm.style.display = 'none';
-                    renderBudget(object);
+                    expectedIncome.innerText = `Expected Income: ${object.expected_income}`;
+                    spendingGoal.innerText = `Spending Goal: ${object.spending_goal}`;
+                    savingsGoal.innerText = `Savings Goal: ${object.savings_goal}`;
+                    budgetContent.style.display = 'block';
+                    // budgetContent.appendChild(expectedIncome);
+                    // budgetContent.appendChild(spendingGoal);
+                    // budgetContent.appendChild(savingsGoal);
                     // expectedIncome.value = object.expected_income;
                     // spendingGoal.value = object.spending_goal;
                     // savingsGoal.value = object.savings_goal;
@@ -274,21 +305,22 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 })
     
             })
-            container.prepend(editForm);
+            div.appendChild(editForm);
+            // container.prepend(editForm);
         })
-        let budgetHeader = document.createElement('div');
-        budgetHeader.setAttribute('class', 'budget-header');
         budgetHeader.appendChild(budgetTitle);
-        budgetHeader.appendChild(deleteBudget);
         budgetHeader.appendChild(editBudget);
-        budgetHeader.appendChild(displayTransactions);
+        budgetHeader.appendChild(deleteBudget);
+        datesHeader.appendChild(budgetDates);
+        budgetContent.appendChild(expectedIncome);
+        budgetContent.appendChild(spendingGoal);
+        budgetContent.appendChild(savingsGoal);
+        budgetFooter.appendChild(displayTransactions);
 
-        let budgetEntries = [budgetHeader, budgetDates, expectedIncome, spendingGoal, savingsGoal]
-
-        for (const entry of budgetEntries) {
-            div.appendChild(entry);
-        }
-
+        div.appendChild(budgetHeader);
+        div.appendChild(datesHeader); 
+        div.appendChild(budgetContent);
+        div.appendChild(budgetFooter);
 
         container.appendChild(div);
     }
@@ -325,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 return response.json();
             })
             .then(function(object) {
-                renderTransaction(object);
+                renderTransaction(budget, object);
                 console.log(object);
             })
         })
@@ -339,16 +371,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         }
         formRow.appendChild(newTransactionForm);
         table.appendChild(formRow);
-    }
 
-        let columns = [colOne, colTwo, colThree, colFour, colFive];
-        for (const column of columns) {
-            horizontal.appendChild(column);
-        }
-
-        for (const transaction of transactions) {
-            renderTransaction(transaction);
-        }
         let budgetDiv = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0]
         budgetDiv.appendChild(table);
 
@@ -357,9 +380,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
     function renderTransactions(budget, transactions) {
         // create transaction table -- shall I move this elsewhere?
         let headers = ['date', 'description', 'amount', 'edit', 'delete'];
-        table.setAttribute('class', 'transactions-container');
+        table.setAttribute('class', `budget-${budget.id} transactions-container`);
+        table.innerHTML = '';
         let horizontal = document.createElement('div');
-        horizontal.setAttribute('class', 'row')
+        horizontal.setAttribute('class', 'transactions-header row')
         let colOne = document.createElement('div');
         colOne.setAttribute('class', 'col-one');
         let colTwo = document.createElement('div');
@@ -387,9 +411,18 @@ document.addEventListener('DOMContentLoaded', function(event) {
         delHeader.innerText = headers[4];
         colFive.appendChild(delHeader);
 
+        let columns = [colOne, colTwo, colThree, colFour, colFive];
+        for (const column of columns) {
+            horizontal.appendChild(column);
+        }
+
         table.appendChild(horizontal);
 
         createTransactionForm(budget);
+
+        for (const transaction of transactions) {
+            renderTransaction(budget, transaction);
+        }
 
         // create new transaction form here
         // let newTransactionForm = document.createElement('form');
@@ -460,7 +493,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     function renderTransaction(budget, transaction) {
         let newRow = document.createElement('div');
-        newRow.setAttribute('class', `transaction-${transaction.id} row`);
+        newRow.setAttribute('transaction-data-id', transaction.id)
+        newRow.setAttribute('class', `row`);
         let newColOne = document.createElement('div');
         newColOne.setAttribute('class', 'col-one');
         let newColTwo = document.createElement('div');
@@ -521,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 })
                 .then(function(object) {
                     editTransactionForm.style.display = 'none';
-                    renderTransaction(object);
+                    renderTransaction(budget, object);
                     console.log(object);
                 })
             })
@@ -532,7 +566,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             newRow.innerHTML = '';
             newRow.appendChild(editTransactionForm);
         })
-    }
 
             let renderDelete = document.createElement('button');
             renderDelete.innerText = 'X';
@@ -568,8 +601,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             for (let column of clmns) {
                 newRow.appendChild(column);
             }
-
-            table.prepend(newRow);
+            table.appendChild(newRow);
         }
 
     function displayDate(string) {
