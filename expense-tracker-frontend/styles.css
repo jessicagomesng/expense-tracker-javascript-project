@@ -61,7 +61,7 @@ h2 {
     color: #fff;
 }
 
-h3 {
+h3, h4 {
     font-family: 'quicksand';
     text-transform: uppercase;
     margin: 10px;
@@ -74,9 +74,24 @@ h5 {
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
+}
+
+[budget-content-id] h5 {
     margin-left: 30px;
     margin-top: 4px;
     margin-bottom: 4px;
+}
+
+.col-one h5 {
+    margin-left: 15px;
+}
+
+.col-one p {
+    margin-left: 15px;
+}
+
+.edit-transaction, .delete-transaction {
+    width: 30px;
 }
 
 header { 
@@ -150,16 +165,45 @@ form.new-transaction {
     cursor: crosshair;
 }
   
+.transactions-header {
+    display: table-row;
+    margin-left: 30px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    background-color: #FFF;
+
+}
 .transactions-container {
     display: table;
+    margin:10px;
+    width: 980px;
 }
 
 .row  {
     display: table-row;
+    margin-left: 30px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 .col-one, .col-two, .col-three, .col-four, .col-five {
     display: table-cell;
+}
+
+.col-one {
+    width: 130px;
+}
+
+.col-three {
+    width: 100px;
+}
+
+.col-four {
+    width: 50px;
+}
+
+.col-five {
+    width: 70px;
 }
 
 div.create-budget {
@@ -172,6 +216,28 @@ div.create-budget {
 
 .create-budget button {
     align-self: flex-start;
+}
+
+form.create-budget {
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #C9F5B8;
+    padding: 10px;
+}
+
+form.create-budget label {
+    margin-left: 30px;
+}
+
+form.create-budget input {
+    margin-left: 60px;
+}
+
+select {
+    font-family: 'fantasque';
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 div[budget-data-id] {
@@ -216,7 +282,8 @@ p {
     margin-bottom: 0px;
     margin-left: 10px;
 }
-.budget-content {
+
+div[budget-content-id] {
     background-color: #fff;
     padding: 10px;
     margin: 10px;
@@ -224,6 +291,7 @@ p {
 
 .budget-footer {
     display: flex;
+    align-items: flex-start;
 }
 
 .budget-footer button {
