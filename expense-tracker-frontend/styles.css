@@ -82,6 +82,10 @@ h5 {
     margin-bottom: 4px;
 }
 
+form[transaction-data-id] {
+    width: 1000px;
+}
+
 .col-one h5 {
     margin-left: 15px;
 }
