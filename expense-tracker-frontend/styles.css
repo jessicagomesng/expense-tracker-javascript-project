@@ -175,8 +175,20 @@ form.new-transaction {
     margin-top: 4px;
     margin-bottom: 4px;
     background-color: #FFF;
-
 }
+
+div[budget-data-id].total {
+    display: table-row;
+    margin-left: 30px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    background-color: #FFF;
+}
+
+div[budget-data-id].total p {
+    font-family: 'fantasque-bolditalic';
+}
+
 .transactions-container {
     display: table;
     margin:10px;
@@ -198,8 +210,17 @@ form.new-transaction {
     width: 130px;
 }
 
+.col-two {
+    width: 650px;
+}
+
 .col-three {
     width: 100px;
+}
+
+.col-three p {
+    text-align: right;
+    padding-right: 50px;
 }
 
 .col-four {
