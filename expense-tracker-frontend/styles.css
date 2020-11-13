@@ -76,7 +76,7 @@ h5 {
     text-transform: uppercase;
 }
 
-[budget-content-id] h5 {
+.budget-content h5 {
     margin-left: 30px;
     margin-top: 4px;
     margin-bottom: 4px;
@@ -138,7 +138,8 @@ body {
 }
 
 form.new-transaction {
-    width: 795px;
+    width: 1000px;
+    margin-left: 20px;
 }
 
 .wrapper { 
@@ -189,10 +190,11 @@ div[budget-data-id].total p {
     font-family: 'fantasque-bolditalic';
 }
 
-.transactions-container {
+div[budget-data-id].transactions-container {
     display: table;
-    margin:10px;
-    width: 980px;
+    margin-top:10px;
+    width: 1000px;
+    margin-bottom:0px;
 }
 
 .row  {
@@ -267,7 +269,7 @@ select {
 
 div[budget-data-id] {
     background-color: #C9F5B8;
-    width: 1000px;
+    width: 1010px;
     padding: 10px;
     margin-left: auto;
     margin-right:auto;
@@ -308,7 +310,8 @@ p {
     margin-left: 10px;
 }
 
-div[budget-content-id] {
+div[budget-data-id].budget-content {
+    width: 1000px;
     background-color: #fff;
     padding: 10px;
     margin: 10px;
@@ -323,13 +326,10 @@ div[budget-content-id] {
     margin-left: auto;
 }
 
-.item-one {
+.budget-title {
     flex-grow: 4;
 }
 
-.delete-budget {
-
-}
 
 .display-transactions {
 
