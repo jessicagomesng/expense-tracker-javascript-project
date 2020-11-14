@@ -383,69 +383,99 @@ document.addEventListener('DOMContentLoaded', function(event) {
         }
     
         render() {
-            let headers = ['date', 'description', 'amount', 'edit', 'delete'];
-            let table = document.createElement('div');
-            table.setAttribute('class', `transactions-container`);
-            table.setAttribute('budget-data-id', this.budget_id)
-            table.innerHTML = '';
-            let horizontal = document.createElement('div');
-            horizontal.setAttribute('class', 'transactions-header row');
-            let colOne = document.createElement('div');
-            colOne.setAttribute('class', 'col-one');
-            let colTwo = document.createElement('div');
-            colTwo.setAttribute('class', 'col-two');
-            let colThree = document.createElement('div');
-            colThree.setAttribute('class', 'col-three');
-            let colFour = document.createElement('div');
-            colFour.setAttribute('class', 'col-four');
-            let colFive = document.createElement('div');
-            colFive.setAttribute('class', 'col-five');
-    
-            let dateHeader = document.createElement('h5');
-            dateHeader.innerText = headers[0];
+            let div = document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`)[0]
+            div.insertAdjacentHTML("beforeend", `<div budget-data-id="${this.budget_id}" class="transactions-container">
+                <div class="transactions-header row">
+                    <div class="col-one">
+                        <h5 budget-data-id="${this.budget_id}">date</h5>
+                    </div>
+                    <div class="col-two">
+                        <h5 budget-data-id="${this.budget_id}">description</h5>
+                    </div>
+                    <div class="col-three">
+                        <h5 budget-data-id="${this.budget_id}">amount</h5>
+                    </div>
+                    <div class="col-four">
+                        <h5 budget-data-id="${this.budget_id}">edit</h5>
+                    </div>
+                    <div class="col-five">
+                        <h5 budget-data-id="${this.budget_id}">delete</h5>
+                    </div>
+                </div>
+            </div>`)
+
             function dateFunction(event) { 
                 event.preventDefault();
                 sortByDate(this.budget_id);
             }
-            let boundDateFunction = dateFunction.bind(this);
-            dateHeader.addEventListener('click', boundDateFunction);
-            colOne.appendChild(dateHeader);
-
-            let descHeader = document.createElement('h5');
-            descHeader.innerText = headers[1];
             function descFunction(event) { 
                 event.preventDefault();
                 sortByDescription(this.budget_id);
             }
-            let boundDescFunction = descFunction.bind(this);
-            descHeader.addEventListener('click', boundDescFunction);
-            colTwo.appendChild(descHeader);
-
-            let amtHeader = document.createElement('h5');
-            amtHeader.innerText = headers[2];
             function amtFunction(event) {
                 event.preventDefault();
                 sortByAmount(this.budget_id);
             }
-            let boundAmtFunction = amtFunction.bind(this);
-            amtHeader.addEventListener('click', boundAmtFunction);
-            colThree.appendChild(amtHeader);
-            let editHeader = document.createElement('h5');
-            editHeader.innerText = headers[3];
-            colFour.appendChild(editHeader);
-            let delHeader = document.createElement('h5');
-            delHeader.innerText = headers[4];
-            colFive.appendChild(delHeader);
-    
-            let columns = [colOne, colTwo, colThree, colFour, colFive];
-            for (const column of columns) {
-                horizontal.appendChild(column);
-            }
+
+            let headers = Array.from(document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`))
+            headers = headers.filter(node => node.nodeName === "H5");
+            headers[0].addEventListener("click", dateFunction.bind(this));
+            headers[1].addEventListener("click", descFunction.bind(this));
+            headers[2].addEventListener("click", amtFunction.bind(this));
+
+
         
-            table.appendChild(horizontal);
+            // let headers = ['date', 'description', 'amount', 'edit', 'delete'];
+            // let table = document.createElement('div');
+            // table.setAttribute('class', `transactions-container`);
+            // table.setAttribute('budget-data-id', this.budget_id)
+            // table.innerHTML = '';
+            // let horizontal = document.createElement('div');
+            // horizontal.setAttribute('class', 'transactions-header row');
+            // let colOne = document.createElement('div');
+            // colOne.setAttribute('class', 'col-one');
+            // let colTwo = document.createElement('div');
+            // colTwo.setAttribute('class', 'col-two');
+            // let colThree = document.createElement('div');
+            // colThree.setAttribute('class', 'col-three');
+            // let colFour = document.createElement('div');
+            // colFour.setAttribute('class', 'col-four');
+            // let colFive = document.createElement('div');
+            // colFive.setAttribute('class', 'col-five');
     
-            let budgetDiv = document.querySelectorAll(`[budget-data-id='${this.budget_id}']`)[0]
-            budgetDiv.appendChild(table);
+            // let dateHeader = document.createElement('h5');
+            // dateHeader.innerText = headers[0];
+            // let boundDateFunction = dateFunction.bind(this);
+            // dateHeader.addEventListener('click', boundDateFunction);
+            // colOne.appendChild(dateHeader);
+
+            // // let descHeader = document.createElement('h5');
+            // // descHeader.innerText = headers[1];
+            // let boundDescFunction = descFunction.bind(this);
+            // descHeader.addEventListener('click', boundDescFunction);
+            // colTwo.appendChild(descHeader);
+
+            // // let amtHeader = document.createElement('h5');
+            // // amtHeader.innerText = headers[2];
+            // let boundAmtFunction = amtFunction.bind(this);
+            // amtHeader.addEventListener('click', boundAmtFunction);
+            // colThree.appendChild(amtHeader);
+            // let editHeader = document.createElement('h5');
+            // editHeader.innerText = headers[3];
+            // colFour.appendChild(editHeader);
+            // let delHeader = document.createElement('h5');
+            // delHeader.innerText = headers[4];
+            // colFive.appendChild(delHeader);
+    
+            // // let columns = [colOne, colTwo, colThree, colFour, colFive];
+            // // for (const column of columns) {
+            // //     horizontal.appendChild(column);
+            // // }
+        
+            // // table.appendChild(horizontal);
+    
+            // let budgetDiv = document.querySelectorAll(`[budget-data-id='${this.budget_id}']`)[0]
+            // budgetDiv.appendChild(table);
         }
     }
 
@@ -460,160 +490,271 @@ document.addEventListener('DOMContentLoaded', function(event) {
         }
     
         render() {
-            let newRow = document.createElement('div');
-            newRow.setAttribute('transaction-data-id', this.id)
-            newRow.setAttribute('class', `row`);
-            let newColOne = document.createElement('div');
-            newColOne.setAttribute('class', 'col-one');
-            let newColTwo = document.createElement('div');
-            newColTwo.setAttribute('class', 'col-two');
-            let newColThree = document.createElement('div');
-            newColThree.setAttribute('class', 'col-three');
-            let newColFour = document.createElement('div');
-            newColFour.setAttribute('class', 'col-four');
-            let newColFive = document.createElement('div');
-            newColFive.setAttribute('class', 'col-five');
-    
-            let renderDate = document.createElement('p');
-            renderDate.setAttribute('budget-data-id', this.budget_id);
-            renderDate.setAttribute('class', 'date');
-            renderDate.innerText = this.date; 
-            // renderDate.innerText = displayDate(this.date);
-            let renderDesc = document.createElement('p');
-            renderDesc.setAttribute('budget-data-id', this.budget_id);
-            renderDesc.setAttribute('class', 'description');
-            renderDesc.innerText = this.description;
-            let renderAmt = document.createElement('p');
-            renderAmt.setAttribute('class', 'amount');
-            renderAmt.setAttribute('budget-data-id', this.budget_id);
-            // get rid of this next thing
-            renderAmt.setAttribute('amount-budget-id', this.budget_id)
-            renderAmt.innerText = this.amount;
-    
-            let renderEdit = document.createElement('button');
-            renderEdit.setAttribute('class', 'edit-transaction button');
-            renderEdit.setAttribute('transaction-data-id', this.id);
-            renderEdit.innerText = 'X';
+            let divs = document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`)
+            divs = Array.from(divs);
+            let table = divs.find(node => node.className === 'transactions-container');
+            let total = divs.find(node => node.className === "total row");
+            console.log(table);
 
-            function createForm(event) {
+            table.insertAdjacentHTML("beforeend", 
+            `<div transaction-data-id="${this.id}" class="row">
+            <div class="col-one">
+                <p budget-data-id="${this.budget_id}" class="date">${this.date}</p>
+            </div>
+            <div class="col-two">
+                <p budget-data-id="${this.budget_id}" class="description">${this.description}</p>
+            </div>
+            <div class="col-three">
+                <p budget-data-id="${this.budget_id}" class="amount">${this.amount}</p>
+            </div>
+            <div class="col-four">
+                <button transaction-data-id="${this.id}" class="edit-transaction button">X</button>
+            </div>
+            <div class="col-five">
+                <button transaction-data-id="${this.id}" class="delete-transaction button">X</button>
+            </div>
+            </div>`)
+
+            let transactionElements = Array.from(document.querySelectorAll(`[transaction-data-id="${this.id}"]`))
+            let editTransaction = transactionElements.find(node => node.className === "edit-transaction button")
+            let deleteTransaction = transactionElements.find(node => node.className === "delete-transaction button")
+            let row = transactionElements.find(node => node.className === 'row');
+
+            function renderEditTForm(event) {
                 event.preventDefault();
-                let editTransactionForm = document.createElement('form');
-                let editDate = document.createElement('input');
-                editDate.setAttribute('type', 'date')
-                // editDate.setAttribute('min', `${budget.start_date}`)
-                // editDate.setAttribute('max', `${budget.end_date}`)
-                editDate.name = 'date';
-                editDate.value = this.date;
-                let editAmt = document.createElement('input');
-                editAmt.setAttribute('type', 'number');
-                editAmt.setAttribute('placeholder', 'amount');
-                editAmt.value = this.amount;
-                let editDesc = document.createElement('input');
-                editDesc.setAttribute('type', 'text');
-                editDesc.setAttribute('placeholder', 'description');
-                editDesc.value = this.description;
-    
-                let submitEdit = document.createElement('input');
-                submitEdit.setAttribute('class', 'button');
-                submitEdit.setAttribute('type', 'submit');
-                submitEdit.setAttribute('value', 'edit')
                 let cancelEdit = document.createElement('button');
                 cancelEdit.setAttribute('class', 'button');
                 cancelEdit.innerText= 'cancel';
-                function submitTransactionEdit(event) {
+                row.innerHTML = '';
+                row.innerHTML += `<form class="edit-transaction">
+                    <label>${this.date}</label>
+                    <input transaction-data-id="${this.id}" type="number" value="${this.amount}" placeholder="amount">
+                    <input transaction-data-id="${this.id}" type="text" value="${this.description}" placeholder="description">
+                    <input transaction-data-id="${this.id}" type="submit" class="submit-edit button" value="edit">
+                </form><button transaction-data-id="${this.id}" class="cancel-edit button">cancel</button>`;
+
+                let els = Array.from(document.querySelectorAll(`[transaction-data-id="${this.id}"]`));
+                let inputs = els.filter(node => node.nodeName === "INPUT");
+                let submit = els.find(node => node.className === 'submit-edit button');
+                let cancel = els.find(node => node.className === 'cancel-edit button')
+
+                function submitEditT(event) {
                     event.preventDefault();
                     let configObj = {
                         method: "PATCH",
-                        headers: { 
+                        headers: {
                             "Content-Type": "application/json",
                             "Accept": "application/json"
                         },
-                        body: JSON.stringify( { date: editDate.value, price: editAmt.value, description: editDesc.value })
+                        body: JSON.stringify( { price: inputs[0].value, description: inputs[1].value } )
                     }
-    
                     fetch(`http://localhost:3000/users/${this.user_id}/budgets/${this.budget_id}/transactions/${this.id}`, configObj)
-                    .then( (response) => {
+                    .then(function(response) {
                         return response.json();
-                    } )
-                    .then( (object) => {
-                        let formDiv = document.querySelectorAll(`[transaction-data-id="${this.id}"]`)[0]
-                        formDiv.remove();
-                        let newT = new TransactionRowDiv(object.id, this.budget_id, object.date, object.description, object.price)
+                    })
+                    .then(function(object) {
+                        row.remove();
+                        let newT = new TransactionRowDiv(object.id, object.budget_id, object.date, object.description, object.price);
                         newT.render();
-                        renderTotal(this.budget_id);
+                        renderTotal(object.budget_id);
                         cancelEdit.remove();
-                    } )
+                    })
                 }
 
-                let boundSubmitTransactionEdit = submitTransactionEdit.bind(this);
-                submitEdit.addEventListener('click', boundSubmitTransactionEdit);
+                submit.addEventListener("click", submitEditT.bind(this));
 
-                function cancelTransactionEdit(event) {
+                function cancelEditT(event) {
                     event.preventDefault();
-                    let formDiv = document.querySelectorAll(`[transaction-data-id="${this.id}"]`)[0]
-                    formDiv.remove();
-                    let oldT = new TransactionRowDiv(this.id, this.budget_id, this.date, this.description, this.amount);
-                    oldT.render();
+                    row.remove();
+                    let unchangedT = new TransactionRowDiv(this.id, this.budget_id, this.date, this.description, this.amount);
+                    unchangedT.render();
+                    renderTotal(this.budget_id);
                 }
 
-                cancelEdit.addEventListener('click', cancelTransactionEdit.bind(this))
-                editTransactionForm.appendChild(editDate);
-                editTransactionForm.appendChild(editAmt);
-                editTransactionForm.appendChild(editDesc);
-                editTransactionForm.appendChild(submitEdit);
-                newRow.innerHTML = '';
-                newRow.appendChild(editTransactionForm);
-                newRow.appendChild(cancelEdit);
-            } 
+                cancel.addEventListener("click", cancelEditT.bind(this));
+            }
 
-            let boundFunction = createForm.bind(this);
-            renderEdit.addEventListener('click', boundFunction);
-                
-            let renderDelete = document.createElement('button');
-            renderDelete.innerText = 'X';
-            renderDelete.setAttribute('class', `delete-transaction button`)
+            editTransaction.addEventListener("click", renderEditTForm.bind(this))
 
-            function deleteTransaction(event) {
+            function deleteT(event) {
                 event.preventDefault();
                 let configObj = {
                     method: "DELETE",
                     headers: {
-                        "Content-Type": "application/json", 
+                        "Content-Type": "application/json",
                         "Accept": "application/json"
                     },
-                    body: JSON.stringify( { transaction_id: this.id } )
+                    body: JSON.stringify( { transaction_id: this.id } ) 
                 }
                 fetch(`http://localhost:3000/users/${this.user_id}/budgets/${this.budget_id}/transactions/${this.id}`, configObj)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(object) {
-                    let rowToDelete =document.querySelectorAll(`[transaction-data-id='${object.id}']`)[0];
+                    let rowToDelete = document.querySelectorAll(`[transaction-data-id="${object.id}"]`)[0]
                     rowToDelete.remove();
                     renderTotal(object.budget_id);
                 })
             }
 
-            let boundDeleteTransaction = deleteTransaction.bind(this);
+            deleteTransaction.addEventListener("click", deleteT.bind(this))
 
-            renderDelete.addEventListener('click', boundDeleteTransaction);
+
+            // table.insertBefore(newRow, total);
+            // let newRow = document.createElement('div');
+            // newRow.setAttribute('transaction-data-id', this.id)
+            // newRow.setAttribute('class', `row`);
+            // let newColOne = document.createElement('div');
+            // newColOne.setAttribute('class', 'col-one');
+            // let newColTwo = document.createElement('div');
+            // newColTwo.setAttribute('class', 'col-two');
+            // let newColThree = document.createElement('div');
+            // newColThree.setAttribute('class', 'col-three');
+            // let newColFour = document.createElement('div');
+            // newColFour.setAttribute('class', 'col-four');
+            // let newColFive = document.createElement('div');
+            // newColFive.setAttribute('class', 'col-five');
     
-            newColOne.appendChild(renderDate);
-            newColTwo.appendChild(renderDesc);
-            newColThree.appendChild(renderAmt);
-            newColFour.appendChild(renderEdit);
-            newColFive.appendChild(renderDelete);
+            // let renderDate = document.createElement('p');
+            // renderDate.setAttribute('budget-data-id', this.budget_id);
+            // renderDate.setAttribute('class', 'date');
+            // renderDate.innerText = this.date; 
+            // renderDate.innerText = displayDate(this.date);
+            // let renderDesc = document.createElement('p');
+            // renderDesc.setAttribute('budget-data-id', this.budget_id);
+            // renderDesc.setAttribute('class', 'description');
+            // renderDesc.innerText = this.description;
+            // let renderAmt = document.createElement('p');
+            // renderAmt.setAttribute('class', 'amount');
+            // renderAmt.setAttribute('budget-data-id', this.budget_id);
+            // get rid of this next thing
+            // renderAmt.setAttribute('amount-budget-id', this.budget_id)
+            // renderAmt.innerText = this.amount;
     
-            let clmns = [newColOne, newColTwo, newColThree, newColFour, newColFive];
+            // let renderEdit = document.createElement('button');
+            // renderEdit.setAttribute('class', 'edit-transaction button');
+            // renderEdit.setAttribute('transaction-data-id', this.id);
+            // renderEdit.innerText = 'X';
+
+            // function createForm(event) {
+            //     event.preventDefault();
+            //     let editTransactionForm = document.createElement('form');
+            //     let editDate = document.createElement('input');
+            //     editDate.setAttribute('type', 'date')
+            //     // editDate.setAttribute('min', `${budget.start_date}`)
+            //     // editDate.setAttribute('max', `${budget.end_date}`)
+            //     editDate.name = 'date';
+            //     editDate.value = this.date;
+            //     let editAmt = document.createElement('input');
+            //     editAmt.setAttribute('type', 'number');
+            //     editAmt.setAttribute('placeholder', 'amount');
+            //     editAmt.value = this.amount;
+            //     let editDesc = document.createElement('input');
+            //     editDesc.setAttribute('type', 'text');
+            //     editDesc.setAttribute('placeholder', 'description');
+            //     editDesc.value = this.description;
     
-            for (let column of clmns) {
-                newRow.appendChild(column);
-            }
-            let divs = document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`)
-            divs = Array.from(divs);
-            let table = divs.find(node => node.className === 'transactions-container');
-            let total = divs.find(node => node.className === "total row");
-            table.insertBefore(newRow, total);
+            //     let submitEdit = document.createElement('input');
+            //     submitEdit.setAttribute('class', 'button');
+            //     submitEdit.setAttribute('type', 'submit');
+            //     submitEdit.setAttribute('value', 'edit')
+            //     let cancelEdit = document.createElement('button');
+            //     cancelEdit.setAttribute('class', 'button');
+            //     cancelEdit.innerText= 'cancel';
+            //     function submitTransactionEdit(event) {
+            //         event.preventDefault();
+            //         let configObj = {
+            //             method: "PATCH",
+            //             headers: { 
+            //                 "Content-Type": "application/json",
+            //                 "Accept": "application/json"
+            //             },
+            //             body: JSON.stringify( { date: editDate.value, price: editAmt.value, description: editDesc.value })
+            //         }
+    
+            //         fetch(`http://localhost:3000/users/${this.user_id}/budgets/${this.budget_id}/transactions/${this.id}`, configObj)
+            //         .then( (response) => {
+            //             return response.json();
+            //         } )
+            //         .then( (object) => {
+            //             let formDiv = document.querySelectorAll(`[transaction-data-id="${this.id}"]`)[0]
+            //             formDiv.remove();
+            //             let newT = new TransactionRowDiv(object.id, this.budget_id, object.date, object.description, object.price)
+            //             newT.render();
+            //             renderTotal(this.budget_id);
+            //             cancelEdit.remove();
+            //         } )
+            //     }
+
+            //     let boundSubmitTransactionEdit = submitTransactionEdit.bind(this);
+            //     submitEdit.addEventListener('click', boundSubmitTransactionEdit);
+
+            //     function cancelTransactionEdit(event) {
+            //         event.preventDefault();
+            //         let formDiv = document.querySelectorAll(`[transaction-data-id="${this.id}"]`)[0]
+            //         formDiv.remove();
+            //         let oldT = new TransactionRowDiv(this.id, this.budget_id, this.date, this.description, this.amount);
+            //         oldT.render();
+            //     }
+
+            //     cancelEdit.addEventListener('click', cancelTransactionEdit.bind(this))
+            //     editTransactionForm.appendChild(editDate);
+            //     editTransactionForm.appendChild(editAmt);
+            //     editTransactionForm.appendChild(editDesc);
+            //     editTransactionForm.appendChild(submitEdit);
+            //     newRow.innerHTML = '';
+            //     newRow.appendChild(editTransactionForm);
+            //     newRow.appendChild(cancelEdit);
+            // } 
+
+            // let boundFunction = createForm.bind(this);
+            // renderEdit.addEventListener('click', boundFunction);
+                
+            // let renderDelete = document.createElement('button');
+            // renderDelete.innerText = 'X';
+            // renderDelete.setAttribute('class', `delete-transaction button`)
+
+            // function deleteTransaction(event) {
+            //     event.preventDefault();
+            //     let configObj = {
+            //         method: "DELETE",
+            //         headers: {
+            //             "Content-Type": "application/json", 
+            //             "Accept": "application/json"
+            //         },
+            //         body: JSON.stringify( { transaction_id: this.id } )
+            //     }
+            //     fetch(`http://localhost:3000/users/${this.user_id}/budgets/${this.budget_id}/transactions/${this.id}`, configObj)
+            //     .then(function(response) {
+            //         return response.json();
+            //     })
+            //     .then(function(object) {
+            //         let rowToDelete =document.querySelectorAll(`[transaction-data-id='${object.id}']`)[0];
+            //         rowToDelete.remove();
+            //         renderTotal(object.budget_id);
+            //     })
+            // }
+
+            // let boundDeleteTransaction = deleteTransaction.bind(this);
+
+            // renderDelete.addEventListener('click', boundDeleteTransaction);
+    
+            // newColOne.appendChild(renderDate);
+            // newColTwo.appendChild(renderDesc);
+            // newColThree.appendChild(renderAmt);
+            // newColFour.appendChild(renderEdit);
+            // newColFive.appendChild(renderDelete);
+    
+            // let clmns = [newColOne, newColTwo, newColThree, newColFour, newColFive];
+    
+            // for (let column of clmns) {
+            //     newRow.appendChild(column);
+            // }
+            // let divs = document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`)
+            // divs = Array.from(divs);
+            // let table = divs.find(node => node.className === 'transactions-container');
+            // let total = divs.find(node => node.className === "total row");
+            // table.insertBefore(newRow, total);
         }
     }
 
@@ -669,7 +810,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
             // x.addDeleteListener();
             // x.addEditListener();
 
-            let displayT = document.querySelectorAll(`[display-budget-transactions-id="${budget.id}"]`)[0]
+            let elements = Array.from(document.querySelectorAll(`[budget-data-id="${budget.id}"]`))
+            let displayT = elements.find(node => node.className === 'display-transactions button')
             let hideT = document.createElement('button');
             hideT.innerText = 'X';
             hideT.setAttribute(`hide-budget-transactions-id`, budget.id);
@@ -677,37 +819,38 @@ document.addEventListener('DOMContentLoaded', function(event) {
             let transactionsTitle = document.createElement('h4');
             transactionsTitle.innerText = 'all transactions';
 
-            // displayT.addEventListener('click', function(event) {
-            //     event.preventDefault();
-            //     fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
-            //     .then(function(response) {
-            //         return response.json();
-            //     })
-            //     .then(function(object) {
-            //         let transactions = new TransactionsDiv(budget.id);
-            //         transactions.render();
+            displayT.addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch(`http://localhost:3000/users/${loggedIn.id}/budgets/${budget.id}/transactions`)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(object) {
+                    let transactions = new TransactionsDiv(budget.id);
+                    transactions.render();
 
-            //         let sortedTransactions = object.sort( (a,b) => new Date(a.date) - new Date(b.date) )
-            //         for (const transaction of sortedTransactions) {
-            //             let transactionRow = new TransactionRowDiv(transaction.id, budget.id, transaction.date, transaction.description, transaction.price)
-            //             transactionRow.render();
-            //         }
-            //         renderTransactionForm(budget);
-            //         renderTotal(budget.id);
-            //         displayT.parentNode.prepend(transactionsTitle);
-            //         displayT.parentNode.replaceChild(hideT, displayT);
-            //     })
-            // })
-            // hideT.addEventListener('click', function(event) {
-            //     event.preventDefault();
-            //     let divs = Array.from(document.querySelectorAll(`[budget-data-id="${budget.id}"]`))
-            //     let transactions = divs.find(node => node.className === 'transactions-container')
-            //     transactions.remove();
-            //     hideT.parentNode.replaceChild(displayT, hideT);
-            //     let form = divs.find(node => node.nodeName === 'FORM');
-            //     form.remove();
-            //     transactionsTitle.remove();
-            // })
+                    let sortedTransactions = object.sort( (a,b) => new Date(a.date) - new Date(b.date) )
+                    for (const transaction of sortedTransactions) {
+                        let transactionRow = new TransactionRowDiv(transaction.id, budget.id, transaction.date, transaction.description, transaction.price)
+                        transactionRow.render();
+                    }
+                    renderTransactionForm(budget);
+                    renderTotal(budget.id);
+                    displayT.parentNode.prepend(transactionsTitle);
+                    displayT.parentNode.replaceChild(hideT, displayT);
+                })
+            })
+
+            hideT.addEventListener('click', function(event) {
+                event.preventDefault();
+                let divs = Array.from(document.querySelectorAll(`[budget-data-id="${budget.id}"]`))
+                let transactions = divs.find(node => node.className === 'transactions-container')
+                transactions.remove();
+                hideT.parentNode.replaceChild(displayT, hideT);
+                let form = divs.find(node => node.nodeName === 'FORM');
+                form.remove();
+                transactionsTitle.remove();
+            })
         }
     }
 
@@ -953,20 +1096,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
 
     function renderTotal(budget_id) {
-        let divs = document.querySelectorAll(`[budget-data-id="${budget_id}"]`)
-        divs = Array.from(divs);
+        let divs = Array.from(document.querySelectorAll(`[budget-data-id="${budget_id}"]`))
         let targetTable = divs.find(node => node.className === 'transactions-container');
 
-        let divsArray = Array.from(divs);
-        let totalRow = divsArray.find(node => node.className === "total row");
+        let totalRow = divs.find(node => node.className === "total row");
         if (totalRow) {
-            totalRow.innerHTML= '';
-        } else {
-            totalRow = document.createElement('div');
+            totalRow.remove();
         }
 
-        let amountNodes = document.querySelectorAll(`[amount-budget-id="${budget_id}"]`)
-        amountNodes = Array.from(amountNodes);
+        let amountNodes = divs.filter(node => node.className === "amount");
         let amounts = amountNodes.map(node => parseInt(node.innerText));
         const reducer = (accumulator, currentValue) => accumulator + currentValue;
         let total = amounts.reduce(reducer, 0);

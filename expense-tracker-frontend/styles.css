@@ -86,6 +86,12 @@ form[transaction-data-id] {
     width: 1000px;
 }
 
+form.edit-transaction {
+    /* edit this */
+    display: table-cell;
+    width: 1000px;
+}
+
 .col-one h5 {
     margin-left: 15px;
 }
