@@ -214,6 +214,10 @@ div[data-color="salmon"] {
     cursor: crosshair;
 }
   
+h5[budget-data-id]:hover {
+    cursor: crosshair;
+    color: #DCDCDC;
+}
 
 .transactions-header {
     display: table-row;
