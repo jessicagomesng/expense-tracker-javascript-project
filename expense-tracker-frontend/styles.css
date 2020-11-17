@@ -52,6 +52,23 @@
     font-display: swap;
 }
 
+.customise {
+    text-align: right;
+    padding-right: 188px;
+    padding-top: 20px;
+}
+
+img {
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+}
+
+img:hover {
+    cursor: crosshair;
+    border: 1px solid white;
+}
+
 h2 {
     font-family: 'handwriting';
     text-align: center;
@@ -83,12 +100,6 @@ h5 {
 }
 
 form[transaction-data-id] {
-    width: 1000px;
-}
-
-form.edit-transaction {
-    /* edit this */
-    display: table-cell;
     width: 1000px;
 }
 
@@ -148,12 +159,39 @@ form.new-transaction {
     margin-left: 20px;
 }
 
+form[transaction-data-id].edit-transaction {
+    margin-left: 20px;
+}
+
+form[transaction-data-id].edit-transaction div {
+    display: inline-block;
+    width: 137px;
+}
+
 .wrapper { 
     width: 300px;
 }
 
+div[data-color="green"], button[data-color="green"], form[data-color="green"] {
+    background-color: #C9F5B8; 
+}
+
+div[data-color="orange"], button[data-color="orange"], form[data-color="orange"] {
+    background-color: #F5DCC7; 
+}
+
+div[data-color="lilac"], button[data-color="lilac"], form[data-color="lilac"] {
+    background-color: #E0C7F5; 
+}
+
+div[data-color="salmon"], button[data-color="salmon"], form[data-color="salmon"] {
+    background-color: #F5C7CF; 
+}
+
+
 .button { 
-    background-color: #C9F5B8; /* Green */
+    background-color: transparent;
+    /* background-color: #C9F5B8; Green */
     border: 1px solid black;
     color: black;
     font-family: 'quicksandlight';
@@ -171,11 +209,12 @@ form.new-transaction {
 }
 
 .button:hover {
-    border: 1px solid white;
-    color: white;
+    border: 1px solid #DCDCDC;
+    color: #DCDCDC;
     cursor: crosshair;
 }
   
+
 .transactions-header {
     display: table-row;
     margin-left: 30px;
@@ -198,6 +237,7 @@ div[budget-data-id].total p {
 
 div[budget-data-id].transactions-container {
     display: table;
+    background: transparent;
     margin-top:10px;
     width: 1000px;
     margin-bottom:0px;
@@ -245,17 +285,22 @@ div.create-budget {
     margin-left: auto;
     margin-right: auto;
     display: flex;
+    justify-content: space-between;
 }
 
 .create-budget button {
-    align-self: flex-start;
+    margin: 5px;
+}
+
+.create-budget div.create-and-sort {
+    align-self: left;
 }
 
 form.create-budget {
     width: 1000px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #C9F5B8;
+    /* background-color: #C9F5B8; */
     padding: 10px;
 }
 
@@ -274,7 +319,7 @@ select {
 }
 
 div[budget-data-id] {
-    background-color: #C9F5B8;
+    /* background-color: #C9F5B8; */
     width: 1010px;
     padding: 10px;
     margin-left: auto;
@@ -292,11 +337,14 @@ p {
     font-size: 13px;
 }
 
+.transaction-title {
+    align-self: left;
+}
+
 .budget-header {
-    background-color: #C9F5B8;
+    /* background-color: #C9F5B8; */
     display: flex;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    justify-content: space-between;
 }
 
 .budget-header button {
@@ -317,7 +365,7 @@ p {
 }
 
 div[budget-data-id].budget-content {
-    width: 1000px;
+    width: 980px;
     background-color: #fff;
     padding: 10px;
     margin: 10px;
