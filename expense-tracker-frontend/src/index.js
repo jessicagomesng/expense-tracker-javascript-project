@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     <h5>Savings Goal: ${this.savings_goal}</h5>
                 </div>
                 <div class="budget-footer">
-                    <button budget-data-id="${this.id}" data-color="green" class="display-transactions button">Display transactions</button>
+                    <button budget-data-id="${this.id}" class="display-transactions button">Display transactions</button>
                 </div>
             </div>`)
 
