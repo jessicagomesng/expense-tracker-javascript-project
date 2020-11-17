@@ -4,7 +4,4 @@ class SessionsController < ApplicationController
 
         render :json => user 
     end 
-
-    def destroy 
-    end
 end 

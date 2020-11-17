@@ -172,19 +172,19 @@ form[transaction-data-id].edit-transaction div {
     width: 300px;
 }
 
-div[data-color="green"], button[data-color="green"], form[data-color="green"] {
+div[data-color="green"] {
     background-color: #C9F5B8; 
 }
 
-div[data-color="orange"], button[data-color="orange"], form[data-color="orange"] {
+div[data-color="orange"] {
     background-color: #F5DCC7; 
 }
 
-div[data-color="lilac"], button[data-color="lilac"], form[data-color="lilac"] {
+div[data-color="lilac"] {
     background-color: #E0C7F5; 
 }
 
-div[data-color="salmon"], button[data-color="salmon"], form[data-color="salmon"] {
+div[data-color="salmon"] {
     background-color: #F5C7CF; 
 }
 
@@ -280,10 +280,11 @@ div[budget-data-id].transactions-container {
 }
 
 div.create-budget {
-    width: 1000px;
+    width: 1010px;
     padding: 10px;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 25px;
     display: flex;
     justify-content: space-between;
 }

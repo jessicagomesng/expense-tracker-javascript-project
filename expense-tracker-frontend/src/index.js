@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(event) {
     let container = document.getElementsByClassName('container')[0];
+    let currentColor = "green";
 
     function createSignInForm() {
         container.innerHTML += `<div class="sign-in">
@@ -61,13 +62,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
         } else {
             createBudgetDiv = document.createElement('div');
             createBudgetDiv.setAttribute('class', 'create-budget');
+            createBudgetDiv.setAttribute('data-color', currentColor);
         }
 
         let divOne = document.createElement('div');
         divOne.setAttribute('class', 'create-and-sort');
         let addBudget = document.createElement('button');
         addBudget.setAttribute('class', 'create-budget button');
-        addBudget.setAttribute('data-color', 'green');
         addBudget.innerText = 'Create Budget';
         addBudget.addEventListener('click', function(event) {
             addBudget.style.display = 'none';
@@ -75,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
         })
         let sortBudgets = document.createElement('button');
         sortBudgets.setAttribute('class', 'sort-budgets button');
-        sortBudgets.setAttribute('data-color', 'green');
         sortBudgets.innerText = 'Sort Budgets';
         sortBudgets.addEventListener('click', function(event) {
             event.preventDefault();
@@ -83,9 +83,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
         })
         let divTwo = document.createElement('div');
         let logOut = document.createElement('button');
-        logOut.setAttribute('class', 'logout button green');
+        logOut.setAttribute('class', 'logout button');
         logOut.innerText = 'Log Out';
-        logOut.setAttribute('data-color', 'green');
         logOut.addEventListener('click', function(event) {
             event.preventDefault();
             renderLoggedOutPage();
@@ -113,8 +112,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         render() {
             container.insertAdjacentHTML('beforeend', `
-            <div budget-data-id="${this.id}" data-color="green">
-                <div class="budget-header" data-color="green">
+            <div budget-data-id="${this.id}" data-color="${currentColor}">
+                <div class="budget-header" data-color="${currentColor}">
                     <h3 class="transaction-title">${this.name}</h3>
                     <div class="buttons">
                         <button budget-data-id="${this.id}" class="edit-budget button">edit budget</button>
@@ -237,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     
         render() {
             let div = document.querySelectorAll(`[budget-data-id="${this.budget_id}"]`)[0]
-            div.insertAdjacentHTML("beforeend", `<div budget-data-id="${this.budget_id}" class="transactions-container" data-color="green">
+            div.insertAdjacentHTML("beforeend", `<div budget-data-id="${this.budget_id}" class="transactions-container" data-color="${currentColor}">
                 <div class="transactions-header row">
                     <div class="col-one">
                         <h5 budget-data-id="${this.budget_id}">date</h5>
@@ -418,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         clementine.addEventListener("click", function(event) {
             event.preventDefault();
+            currentColor = "orange";
             let elements = document.querySelectorAll('[data-color]');
             for (const e of elements) {
                 e.setAttribute("data-color", "orange")
@@ -426,6 +426,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         lilac.addEventListener("click", function(event) {
             event.preventDefault();
+            currentColor = "lilac";
             let elements = document.querySelectorAll('[data-color]');
             for (const e of elements) {
                 e.setAttribute("data-color", "lilac")
@@ -434,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         salmon.addEventListener("click", function(event) {
             event.preventDefault();
+            currentColor = "salmon";
             let elements = document.querySelectorAll('[data-color]');
             for (const e of elements) {
                 e.setAttribute("data-color", "salmon")
@@ -444,6 +446,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     function renderLoggedInPage() {
         container.innerHTML = '';
+        let customise = document.getElementsByClassName('customise')[0];
+        if (customise) {
+            customise.remove();
+        }
         customisePage();
         header.style.visibility = 'visible';
         setUpHeader();
@@ -518,7 +524,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
 
     function renderBudgetForm() { 
-        container.insertAdjacentHTML('afterbegin', `<form class='create-budget' data-color='green'>
+        let div = document.getElementsByClassName('create-budget')[0];
+        div.insertAdjacentHTML('afterbegin', `<form class='create-budget'>
         <h3>Create a Budget</h3><br>
         <select id='select-month'>
             <option value="January">January</option>
@@ -540,11 +547,14 @@ document.addEventListener('DOMContentLoaded', function(event) {
         <input type="text" name="savings_goal"><br>
         <label>Spending Goal:</label>
         <input type="text" name="spending_goal"><br>
-        <button class="create-budget button">Create</button>  <button id="cancel-create-budget" class="button">Cancel</button>        
+        <button id="submit-create-budget" class="button">Create</button>  <button id="cancel-create-budget" class="button">Cancel</button>        
         </form>`)
 
-        let form = document.getElementsByClassName('create-budget')[0];
-        let createB = document.getElementsByClassName('create-budget')[1];
+        let elements = Array.from(document.getElementsByClassName('create-budget'));
+        let form = elements.find(node => node.nodeName === 'FORM');
+        // let form = document.getElementsByClassName('create-budget')[1];
+        let createB = document.getElementById('submit-create-budget');
+        // let createB = document.getElementsByClassName('create-budget')[1];
         let cancelNewB = document.getElementById('cancel-create-budget')
         let selectMonth = document.getElementById('select-month');
         let inputs = document.getElementsByTagName('input');
