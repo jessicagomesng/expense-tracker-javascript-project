@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_150018) do
+ActiveRecord::Schema.define(version: 2020_11_23_172829) do
 
   create_table "budgets", force: :cascade do |t|
     t.integer "user_id"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 2020_10_27_150018) do
     t.float "expected_income"
     t.float "spending_goal"
     t.float "savings_goal"
+    t.boolean "starred", default: false
   end
 
   create_table "transactions", force: :cascade do |t|

@@ -20,12 +20,11 @@ class BudgetsController < ApplicationController
     def update 
         user = User.find_by_id(params[:user_id])
         budget = user.budgets.find_by_id(params[:id])
-        budget.update(:spending_goal => params[:spending_goal], :savings_goal => params[:savings_goal], :expected_income => params[:expected_income])
+        budget.update(budget_params)
         render :json => budget
     end 
 
     def destroy 
-        # should i write this so it's user.budgets 
         budget = Budget.find_by_id(params[:id]).destroy 
         render :json => budget
     end 
@@ -73,5 +72,9 @@ class BudgetsController < ApplicationController
             budget.start_date = "#{Date.today.year}-12-01"
             budget.end_date = "#{Date.today.year}-12-31"
         end 
+    end 
+
+    def budget_params
+        params.require(:budget).permit(:spending_goal, :savings_goal, :expected_income, :starred, :user_id)
     end 
 end 
