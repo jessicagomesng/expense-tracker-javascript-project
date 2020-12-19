@@ -205,6 +205,7 @@ div[data-color="salmon"] {
 }
 
 .centered-button {
+    width: 398px;
     text-align: center;
 }
 
@@ -390,6 +391,10 @@ div[budget-data-id].budget-content {
 }
 
 
-.display-transactions {
+button.star-budget {
+    border: none
+}
 
+button.star-budget:hover {
+    border: none;
 }

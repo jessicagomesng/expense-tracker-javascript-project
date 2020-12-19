@@ -81,6 +81,14 @@ document.addEventListener('DOMContentLoaded', function(event) {
             event.preventDefault();
             renderLoggedInPage();
         })
+        let viewStarred = document.createElement('button');
+        viewStarred.setAttribute('class', 'view-starred button');
+        viewStarred.innerText = 'Starred Budgets';
+        viewStarred.addEventListener('click', function(event) {
+            event.preventDefault();
+            renderLoggedInPage(true);
+        })
+
         let divTwo = document.createElement('div');
         let logOut = document.createElement('button');
         logOut.setAttribute('class', 'logout button');
@@ -92,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         })
         divOne.appendChild(addBudget);
         divOne.appendChild(sortBudgets);
+        divOne.appendChild(viewStarred);
         divTwo.appendChild(logOut);
         createBudgetDiv.appendChild(divOne);
         createBudgetDiv.appendChild(divTwo);
@@ -108,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             this.savings_goal = budgetAttributes.savings_goal,
             this.spending_goal = budgetAttributes.spending_goal 
             this.user_id = budgetAttributes.user_id
+            this.starred = budgetAttributes.starred;
         }
 
         render() {
@@ -118,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     <div class="buttons">
                         <button budget-data-id="${this.id}" class="edit-budget button">edit budget</button>
                         <button budget-data-id="${this.id}" class="delete-budget button">delete budget</button>
+                        <button budget-data-id="${this.id}" class="star-budget button">☆</button>
                     </div>
                 </div>
                 <div class="dates-header">
@@ -139,6 +150,29 @@ document.addEventListener('DOMContentLoaded', function(event) {
             let deleteBudget = divs.find(node => node.className === 'delete-budget button');
             let editBudget = divs.find(node => node.className === "edit-budget button");
             let budgetContent = divs.find(node => node.className === 'budget-content');
+            let starBudget = divs.find(node => node.className === 'star-budget button');
+
+            this.starred ? starBudget.innerText = "★" : starBudget.innerText = "☆"
+
+            starBudget.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.starred = !this.starred;
+                let configObj = {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify( { starred: this.starred, user_id: this.user_id, id: this.id } )
+                }
+                console.log(this.starred)
+                fetch(`http://localhost:3000/users/${this.user_id}/budgets/${this.id}}`, configObj)
+                .then((response) => response.json())
+                .then((object) => {
+                    object.starred ? starBudget.innerText = "★" : starBudget.innerText = "☆"
+                    console.log(object)
+                });
+            })
 
             function removeBudget(event) {
                 event.preventDefault();
@@ -444,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         
     }
 
-    function renderLoggedInPage() {
+    function renderLoggedInPage(starred = false) {
         container.innerHTML = '';
         let customise = document.getElementsByClassName('customise')[0];
         if (customise) {
@@ -458,7 +492,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
             return response.json();
         })
         .then(function(object) {
-            listBudgets(object);
+            if (starred) {
+                let starredBudgets = object.filter((budget) => budget.starred)
+                listBudgets(starredBudgets);
+            } else {
+                listBudgets(object);
+            }
         })
     }
 
