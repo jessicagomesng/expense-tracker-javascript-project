@@ -11,15 +11,20 @@ class TransactionsController < ApplicationController
         transaction.date = params[:date]
         transaction.price = params[:price]
         transaction.description = params[:description]
-        transaction.save 
-
-        render :json => transaction 
+        if transaction.save 
+            render :json => transaction 
+        else 
+            render :json => { errors: transaction.errors.full_messages }
+        end 
     end 
 
     def update 
         transaction = Transaction.find_by_id(params[:id])
-        transaction.update(:price => params[:price], :description => params[:description])
-        render :json => transaction
+        if transaction.update(:price => params[:price], :description => params[:description])
+            render :json => transaction
+        else 
+            render :json => { errors: transaction.errors.full_messages }
+        end 
     end 
 
     def destroy 

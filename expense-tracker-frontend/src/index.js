@@ -205,18 +205,19 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 cancel.setAttribute('class', 'button');
                 editBudget.replaceWith(cancel);
 
-                budgetContent.innerHTML += `<form class="edit-budget">
+                budgetContent.innerHTML += `<form class="edit-budget" budget-data-id="${this.id}">
                     <label>Expected Income:</label>
-                    <input type="text" name="savings_goal" value="${this.expected_income}" budget-data-id="${this.id}"><br>
+                    <input type="text" name="savings_goal" value="${this.expected_income}" budget-data-id="${this.id}" required /><br>
                     <label>Spending Goal:</label>
-                    <input type="text" name="spending_goal" value="${this.spending_goal}" budget-data-id="${this.id}"><br>
+                    <input type="text" name="spending_goal" value="${this.spending_goal}" budget-data-id="${this.id}" required /><br>
                     <label>Savings Goal:</label>
-                    <input type="text" name="savings_goal" value="${this.savings_goal}" budget-data-id="${this.id}"><br>
+                    <input type="text" name="savings_goal" value="${this.savings_goal}" budget-data-id="${this.id}" required /><br>
                     <button class="submit-edit button" budget-data-id="${this.id}">Edit Budget</button>
                 </form>`
 
                 divs = document.querySelectorAll(`[budget-data-id="${this.id}"]`)
                 divs = Array.from(divs);
+                let form = divs.find(node => node.className === 'edit-budget');
                 let submit = divs.find(node => node.className === 'submit-edit button');
                 let inputs = divs.filter(node => node.nodeName === 'INPUT');
 
@@ -239,11 +240,21 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         return response.json();
                     })
                     .then(function(object) {
-                        budgetContent.innerHTML = '';
-                        budgetContent.innerHTML += `<h5>Expected Income: ${object.expected_income}</h5>
-                        <h5>Spending Goal: ${object.spending_goal}</h5>
-                        <h5>Savings Goal: ${object.savings_goal}</h5>`
-                        cancel.replaceWith(editBudget);
+                        if (object.errors) {
+                            let ul = document.createElement('ul');
+                            object.errors.map( (error) => { 
+                                let li = document.createElement('li');
+                                li.innerText = error;
+                                ul.appendChild(li);
+                            } )
+                            form.prepend(ul)
+                        } else { 
+                            budgetContent.innerHTML = '';
+                            budgetContent.innerHTML += `<h5>Expected Income: ${object.expected_income}</h5>
+                            <h5>Spending Goal: ${object.spending_goal}</h5>
+                            <h5>Savings Goal: ${object.savings_goal}</h5>`
+                            cancel.replaceWith(editBudget);
+                        }
                     })
                 }
 
@@ -356,8 +367,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 table.insertAdjacentHTML("afterend", 
                 `<form transaction-data-id="${this.id}" class="edit-transaction">
                     <div><label>${displayDate(this.date)}</label></div>
-                    <input transaction-data-id="${this.id}" type="number" value="${this.amount}" placeholder="amount">
-                    <input transaction-data-id="${this.id}" type="text" value="${this.description}" placeholder="description">
+                    <input transaction-data-id="${this.id}" type="number" value="${this.amount}" placeholder="amount" required />
+                    <input transaction-data-id="${this.id}" type="text" value="${this.description}" placeholder="description" required />
                     <input transaction-data-id="${this.id}" type="submit" class="submit-edit button" value="edit">
                     <button transaction-data-id="${this.id}" class="cancel-edit button">cancel</button>
                 </form>`)
@@ -383,11 +394,21 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         return response.json();
                     })
                     .then(function(object) {
-                        form.remove();
-                        row.remove();
-                        let newT = new Transaction(object.id, object.budget_id, object.date, object.description, object.price);
-                        newT.render();
-                        renderTotal(object.budget_id);
+                        if (object.errors) {
+                            let ul = document.createElement('ul');
+                            object.errors.map( (error) => {
+                                let li = document.createElement('li');
+                                li.innerText = error;
+                                ul.appendChild(li);
+                            })
+                            table.parentNode.insertBefore(ul, table.nextSibling)
+                        } else {
+                            form.remove();
+                            row.remove();
+                            let newT = new Transaction(object.id, object.budget_id, object.date, object.description, object.price);
+                            newT.render();
+                            renderTotal(object.budget_id);
+                        }
                     })
                 }
 
@@ -579,13 +600,19 @@ document.addEventListener('DOMContentLoaded', function(event) {
             <option value="October">October</option>
             <option value="November">November</option>
             <option value="December">December</option>
+        </select>
+        <select id='select-year'>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
         </select><br>
         <label>Expected Income:</label>
-        <input type="text" name="expected_income"><br>
+        <input type="text" name="expected_income" required /><br>
         <label>Savings Goal:</label>
-        <input type="text" name="savings_goal"><br>
+        <input type="text" name="savings_goal" required /><br>
         <label>Spending Goal:</label>
-        <input type="text" name="spending_goal"><br>
+        <input type="text" name="spending_goal" required /><br>
         <button id="submit-create-budget" class="button">Create</button>  <button id="cancel-create-budget" class="button">Cancel</button>        
         </form>`)
 
@@ -596,6 +623,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         // let createB = document.getElementsByClassName('create-budget')[1];
         let cancelNewB = document.getElementById('cancel-create-budget')
         let selectMonth = document.getElementById('select-month');
+        let selectYear = document.getElementById('select-year');
         let inputs = document.getElementsByTagName('input');
         
         createB.addEventListener("click", function(event) {
@@ -608,7 +636,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }, 
             body: JSON.stringify({ 
                 user_id: loggedIn.id,
-                month: selectMonth.value, 
+                month: selectMonth.value,
+                year: selectYear.value,
                 expected_income: inputs[0].value,
                 savings_goal: inputs[1].value,
                 spending_goal: inputs[2].value })
@@ -619,12 +648,22 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 return response.json();
             })
             .then(function(object) {
-                form.remove();
-                createB.style.display = "inline-block";
-                setUpHeader();
-                let x = new Budget(object)
-                x.render();
-                listTransactions(x);
+                if (object.errors) {
+                    let ul = document.createElement('ul');
+                    object.errors.map( (error) => { 
+                        let li = document.createElement('li');
+                        li.innerText = error;
+                        ul.appendChild(li);
+                    } )
+                    form.prepend(ul)
+                } else { 
+                    form.remove();
+                    createB.style.display = "inline-block";
+                    setUpHeader();
+                    let x = new Budget(object)
+                    x.render();
+                    listTransactions(x);
+                }
             })
         })
 
@@ -639,9 +678,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
         let budgetDiv = document.querySelectorAll(`[budget-data-id='${budget.id}']`)[0];
         budgetDiv.insertAdjacentHTML('beforeend', `<div class="new-transaction row">
         <form budget-data-id="${budget.id}" class="new-transaction form">
-            <input budget-data-id="${budget.id}" class="new-transaction" type="date" min="${budget.start_date}" max="${budget.end_date}" name="date">
-            <input budget-data-id="${budget.id}" class="new-transaction" type="number" placeholder="amount" step="0.01">
-            <input budget-data-id="${budget.id}" class="new-transaction" type="text" placeholder="description">
+            <input budget-data-id="${budget.id}" class="new-transaction" type="date" min="${budget.start_date}" max="${budget.end_date}" name="date" required />
+            <input budget-data-id="${budget.id}" class="new-transaction" type="number" placeholder="amount" step="0.01" required />
+            <input budget-data-id="${budget.id}" class="new-transaction" type="text" placeholder="description" required />
             <button budget-data-id="${budget.id}" class="submit-transaction button">log transaction</button>
         </form>
         </div>`)
@@ -666,10 +705,20 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 return response.json();
             })
             .then(function(object) {
-                let newT = new Transaction(object.id, budget.id, object.date, object.description, object.price)
-                newT.render();
-                newTForm.reset();
-                renderTotal(budget.id);
+                if (object.errors) {
+                    let ul = document.createElement('ul');
+                    object.errors.map( (error) => {
+                        let li = document.createElement('li');
+                        li.innerText = error;
+                        ul.appendChild(li);
+                    })
+                    budgetDiv.appendChild(ul)
+                } else {
+                    let newT = new Transaction(object.id, budget.id, object.date, object.description, object.price)
+                    newT.render();
+                    newTForm.reset();
+                    renderTotal(budget.id);
+                }
             })
         })
 
