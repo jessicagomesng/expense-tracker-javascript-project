@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                                 li.innerText = error;
                                 ul.appendChild(li);
                             })
-                            table.parentNode.insertBefore(ul, table.nextSibling)
+                            form.appendChild(ul);
                         } else {
                             form.remove();
                             row.remove();
@@ -568,6 +568,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
             hideT.parentNode.replaceChild(displayT, hideT);
             let form = divs.find(node => node.nodeName === 'FORM');
             form.remove();
+            let editTs = Array.from(document.getElementsByClassName('edit-transaction'))
+            let editF = editTs.find(node => node.className === 'edit-transaction')
+            if (editF) {
+                editF.remove();
+            }
             transactionsTitle.remove();
         })
     }
@@ -712,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         li.innerText = error;
                         ul.appendChild(li);
                     })
-                    budgetDiv.appendChild(ul)
+                    newTForm.appendChild(ul)
                 } else {
                     let newT = new Transaction(object.id, budget.id, object.date, object.description, object.price)
                     newT.render();
