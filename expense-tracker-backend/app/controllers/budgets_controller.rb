@@ -29,7 +29,7 @@ class BudgetsController < ApplicationController
     end 
 
     def destroy 
-        budget = Budget.find_by_id(params[:id]).destroy 
+        budget = Budget.find_by_id(params[:id]).destroy
         render :json => budget
     end 
 
