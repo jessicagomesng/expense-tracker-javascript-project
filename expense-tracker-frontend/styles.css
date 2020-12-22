@@ -127,7 +127,7 @@ header h2 {
     letter-spacing: 2px;
 }
 
-.sign-in {
+div.sign-in, div.sign-up {
     margin: auto;
     width: 400px;
     background-color: #C9F5B8;
@@ -142,7 +142,7 @@ label {
     text-transform: uppercase;
 }
 
-input[type='text'] {
+input[type='text'], input[type='password'] {
     font-family: 'fantasque';
     font-size: 13px;
     letter-spacing: 1px;
@@ -397,4 +397,10 @@ button.star-budget {
 
 button.star-budget:hover {
     border: none;
+}
+
+li { 
+    font-family: 'fantasque';
+    font-size: 13px;
+    letter-spacing: 1px;
 }

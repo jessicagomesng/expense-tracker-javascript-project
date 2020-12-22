@@ -7,10 +7,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
         <form class="signup-form">
           <h2>Expense Tracker</h2>
             <div class='wrapper'>
-            <label for="email">Sign In/Up Below:</label>
+            <label for="email">Sign In Below:</label>
             <input type="text" id="email" name="email" placeholder="YOUR EMAIL HERE" /><br>
+            <input type="password" id="password" name="password" placeholder="YOUR PASSWORD HERE" /><br>
             <div class='centered-button'>
             <input type="submit" value="Sign In" class='button' /> 
+            or <button class="sign-up button">Sign Up</button>
             </div>
             </div>
         </form>
@@ -18,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         let logIn = document.getElementsByClassName('sign-in')[0];
         let input = document.getElementsByTagName('input');
+        let signUp = document.getElementsByClassName('sign-up')[0];
 
         logIn.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -27,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                body: JSON.stringify({ email: input[0].value })
+                body: JSON.stringify({ email: input[0].value, password: input[1].value })
             }
 
             if (input[0].value !== "") { 
@@ -36,19 +39,96 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     return response.json();
                 })
                 .then(function(object) {
-                    loggedIn = object; 
-                    localStorage.loggedIn = object.id;
-                    renderLoggedInPage();
+                    if (object.errors) {
+                        let p = document.createElement('p')
+                        p.innerText = object.errors
+                        logIn.prepend(p);
+                    } else {
+                        loggedIn = object; 
+                        localStorage.loggedIn = object.id;
+                        renderLoggedInPage();
+                    }
                 })
                 .catch(function(error) {
                     container.insertAdjacentHTML('beforebegin', `<p>Something went wrong. Please try again</p>`)
                 })
             }
         })
+
+        signUp.addEventListener('click', function(event) {
+            event.preventDefault();
+            container.innerHTML = '';
+            createSignUpForm();
+        })
             
     }
 
     createSignInForm();
+
+    function createSignUpForm() {
+        container.insertAdjacentHTML('afterbegin', `<div class="sign-up">
+        <form class="signup-form">
+          <h2>Expense Tracker</h2>
+            <div class='wrapper'>
+            <label for="email">Sign Up Below:</label>
+            <input type="text" id="email" name="email" placeholder="YOUR EMAIL HERE" /><br>
+            <input type="password" id="password" name="password" placeholder="YOUR PASSWORD HERE" /><br>
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="PASSWORD CONFIRMATION" /><br>
+            <div class='centered-button'>
+            <input type="submit" value="Sign Up" class='button' /> 
+            or <button class="sign-in button">Sign In</button>
+            </div>
+            </div>
+        </form>
+        </div>`)
+
+        let signUp = document.getElementsByClassName('sign-up')[0];
+        let input = document.getElementsByTagName('input');
+        let signIn = document.getElementsByClassName('sign-in')[0];
+
+        signUp.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let configObj = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ email: input[0].value, password: input[1].value, password_confirmation: input[2].value })
+            }
+
+            if (input[0].value !== "") { 
+                fetch('http://localhost:3000/users', configObj)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(object) {
+                    if (object.errors) {
+                        let ul = document.createElement('ul');
+                        object.errors.map( (error) => { 
+                            let li = document.createElement('li');
+                            li.innerText = error;
+                            ul.appendChild(li);
+                        })
+                        signUp.prepend(ul);
+                    } else {
+                        loggedIn = object; 
+                        localStorage.loggedIn = object.id;
+                        renderLoggedInPage();
+                    }
+                })
+                .catch(function(error) {
+                    container.insertAdjacentHTML('beforebegin', `<p>Something went wrong. Please try again</p>`)
+                })
+            }
+        })
+
+        signIn.addEventListener('click', function(event) {
+            event.preventDefault();
+            container.innerHTML = '';
+            createSignInForm();
+        })
+    }
 
     let header = document.getElementsByTagName('header')[0];
     let loggedIn = null;
