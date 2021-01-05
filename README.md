@@ -1,7 +1,7 @@
 # expense-tracker-javascript-project
 This is the fourth project in Flatiron's Full-Stack Web Development course (create a JavaScript project).
 
-The Expense Tracker is built with a JavaScript frontend and a RailsAPI backend. It is an application where users can track and update their monthly budgets.
+The Expense Tracker is built with a vanilla JavaScript frontend and a RailsAPI backend. It is an application where users can track and update their monthly budgets. You can explore and access this application by visiting: https://budget-life.herokuapp.com/
 
 ## Installation:
 
